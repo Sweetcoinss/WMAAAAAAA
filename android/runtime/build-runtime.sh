@@ -67,7 +67,7 @@ fi
 # 4. Box86 : emulation x86 (32 bits) vers ARM64
 # ---------------------------------------------------------------------------
 echo "=== Box86 $BOX86_VERSION ==="
-mkdir -p /tmp/box86
+mkdir -p /tmp/box86 /opt/box86
 cd /tmp/box86
 git clone --depth 1 --branch "$BOX86_VERSION" https://github.com/ptitSeb/box86.git src \
     || git clone --depth 1 https://github.com/ptitSeb/box86.git src
