@@ -184,11 +184,19 @@ final class DeviceProfile {
         sb.append(value);
     }
 
-    /** Le mode de rendu demande par l'utilisateur prime sur la detection. */
+    /**
+     * Le mode de rendu demande par l'utilisateur prime sur la detection.
+     *
+     * <p><b>Par defaut, le rendu est logiciel</b> (llvmpipe).  Toucher au
+     * pilote GPU du noyau depuis le runtime Linux peut provoquer une panique du
+     * noyau sur certains telephones (redemarrage de l'appareil) ; le mode GPU
+     * n'est donc active qu'a la demande explicite de l'utilisateur, qui
+     * accepte ce risque.
+     */
     static String rendererFor(Context context, DeviceProfile profile, boolean gpuFailed) {
         if (gpuFailed) return RENDERER_SOFTWARE;
         String asked = GameData.getRenderer(context);
-        if (asked == null || "auto".equals(asked)) return profile.renderer;
+        if (asked == null || "auto".equals(asked)) return RENDERER_SOFTWARE;
         if (RENDERER_SOFTWARE.equals(asked)) return RENDERER_SOFTWARE;
         // Un pilote exige explicitement n'est utilise que s'il est present.
         if (RENDERER_MALI.equals(asked) && RENDERER_MALI.equals(profile.renderer)) {
@@ -197,6 +205,6 @@ final class DeviceProfile {
         if (RENDERER_TURNIP.equals(asked) && RENDERER_TURNIP.equals(profile.renderer)) {
             return RENDERER_TURNIP;
         }
-        return profile.renderer;
+        return RENDERER_SOFTWARE;
     }
 }

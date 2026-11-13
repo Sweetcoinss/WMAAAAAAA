@@ -154,10 +154,20 @@ public class GameActivity extends Activity {
                 Log.e(TAG, "Prefixe Wine", e);
             }
             boolean retry = getIntent().getBooleanExtra(EXTRA_SOFTWARE_RETRY, false);
-            String mode = DeviceProfile.rendererFor(this, profile, retry || GameData.isGpuFailed(this));
+            // Securite : si la session precedente a ete interrompue brutalement
+            // (crash du moteur ou redemarrage de l'appareil), on force le
+            // rendu logiciel : le pilote GPU du noyau n'est alors pas touche.
+            boolean crashed = GameData.sessionCrashed(this);
+            if (crashed) {
+                Log.w(TAG, "Session precedente interrompue : rendu logiciel force");
+            }
+            String mode = DeviceProfile.rendererFor(this, profile,
+                    crashed || retry || GameData.isGpuFailed(this));
             boolean gpu = !"software".equals(mode) && runtime.gpuAvailable(mode);
             Log.i(TAG, "Rendu " + mode + " (" + profile.gpuName + "), " + width + "x" + height
                     + " @" + targetFps + " i/s");
+            // Marqueur de session : efface a la sortie normale.
+            GameData.setSessionStarted(this, true);
             java.lang.Process process = runtime.start(width, height, input.port(), gpu, mode, targetFps);
             if (!resumed) {
                 input.setPaused(true);
@@ -408,6 +418,9 @@ public class GameActivity extends Activity {
         if (lanNetwork != null) lanNetwork.close();
         if (controllerMonitor != null) controllerMonitor.close();
         if (input != null) input.close();
+        // Sortie normale : le marqueur de session est efface.  S'il reste, la
+        // prochaine session sera consideree comme interrompue (voir start()).
+        GameData.setSessionStarted(this, false);
         super.onDestroy();
     }
 

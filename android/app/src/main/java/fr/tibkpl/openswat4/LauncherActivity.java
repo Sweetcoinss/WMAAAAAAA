@@ -182,7 +182,13 @@ public class LauncherActivity extends Activity {
 
         // Le jeu est la : on propose de jouer directement.
         final File found = gameDir;
-        status.setText(getString(R.string.status_found, found.getAbsolutePath()));
+        if (GameData.sessionCrashed(this)) {
+            // La session precedente s'est interrompue brutalement : on previent
+            // et le rendu logiciel sera impose (il ne touche pas au GPU).
+            status.setText(R.string.status_previous_crash);
+        } else {
+            status.setText(getString(R.string.status_found, found.getAbsolutePath()));
+        }
         playButton.setVisibility(View.VISIBLE);
         playButton.setText(returnToGame ? R.string.btn_return_game : R.string.btn_play);
         playButton.setOnClickListener(v -> {

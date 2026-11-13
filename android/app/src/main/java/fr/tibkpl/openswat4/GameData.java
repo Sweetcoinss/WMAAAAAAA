@@ -24,6 +24,7 @@ final class GameData {
     private static final String KEY_DATA_PATH = "data_path";
     private static final String KEY_RENDER_HEIGHT = "render_height";
     private static final String KEY_GPU_FAILED = "gpu_failed";
+    private static final String KEY_SESSION_STARTED = "session_started";
     private static final String KEY_LANGUAGE = "language";
     private static final String KEY_RENDERER = "renderer";
     private static final String KEY_SHOW_FPS = "show_fps";
@@ -97,6 +98,24 @@ final class GameData {
     static void setGpuFailed(Context context, boolean failed) {
         prefs(context).edit().putBoolean(KEY_GPU_FAILED, failed)
                 .putInt(KEY_GPU_FAILED_VERSION, appVersion(context)).apply();
+    }
+
+    /**
+     * Marqueur de session : ecrit juste avant de lancer le moteur, efface quand
+     * la session se termine normalement.
+     *
+     * <p>Si le marqueur est encore present au demarrage suivant, c'est que la
+     * session precedente a ete interrompue brutalement (crash du moteur, ou
+     * redemarrage de l'appareil) : l'application repasse alors en rendu
+     * logiciel, qui ne touche pas au pilote GPU du noyau.
+     */
+    static void setSessionStarted(Context context, boolean started) {
+        prefs(context).edit().putBoolean(KEY_SESSION_STARTED, started).apply();
+    }
+
+    /** Vrai si la session precedente s'est terminee de facon anormale. */
+    static boolean sessionCrashed(Context context) {
+        return prefs(context).getBoolean(KEY_SESSION_STARTED, false);
     }
 
     @SuppressWarnings("deprecation")

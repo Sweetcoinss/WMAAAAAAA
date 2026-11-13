@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -87,7 +88,7 @@ final class GameRuntime {
         env.add("SDL_JOYSTICK_HIDAPI=0");
 
         LanNetwork.prepare(context, config.rootfsDir);
-        ProcessBuilder pb = proot(context, config.rootfsDir, binds, env, "/game",
+        ProcessBuilder pb = proot(context, config.rootfsDir, binds, env, "/game", gpu,
                 "/opt/ut/run-swat4.sh");
         pb.redirectErrorStream(true);
         pb.redirectOutput(logFile());
@@ -106,7 +107,7 @@ final class GameRuntime {
         List<String> env = new ArrayList<>();
         env.add("HOME=/home/ut");
         env.add("SWAT4_FPS=" + targetFps);
-        ProcessBuilder pb = proot(context, config.rootfsDir, binds, env, "/game",
+        ProcessBuilder pb = proot(context, config.rootfsDir, binds, env, "/game", false,
                 "/opt/ut/setup-wine.sh", "/game", String.valueOf(width), String.valueOf(height),
                 String.valueOf(targetFps));
         pb.redirectErrorStream(true);
@@ -120,11 +121,17 @@ final class GameRuntime {
     }
 
     /**
-     * Commande proot dans le rootfs : /dev, /proc, /sys et /storage (memes
+     * Commande proot dans le rootfs : les repertoires necessaires (memes
      * chemins qu'Android), plus les montages donnes.
+     *
+     * <p><b>Important</b> : on ne monte PAS tout {@code /dev}.  Un acces au
+     * pilote GPU du noyau ({@code /dev/kgsl-3d0}, {@code /dev/mali0}) depuis un
+     * processus non Android peut provoquer une <i>panique du noyau</i>, c'est
+     * a dire un redemarrage de l'appareil.  Seuls les peripheriques necessaires
+     * sont donc montes, et le GPU seulement si le mode GPU est demande.
      */
     static ProcessBuilder proot(Context context, File rootfs, List<String> binds, List<String> env,
-                                String workDir, String... command) throws IOException {
+                                String workDir, boolean gpu, String... command) throws IOException {
         String libDir = context.getApplicationInfo().nativeLibraryDir;
         File prootTmp = new File(context.getCacheDir(), "proot");
         if (!prootTmp.isDirectory() && !prootTmp.mkdirs()) {
@@ -149,10 +156,28 @@ final class GameRuntime {
         cmd.add("--link2symlink");
         cmd.add("-r");
         cmd.add(rootfs.getAbsolutePath());
-        for (String b : new String[]{"/dev", "/proc", "/sys", "/storage",
+        for (String b : new String[]{"/proc", "/storage",
                 new File(rootfs, "tmp").getAbsolutePath() + ":/dev/shm"}) {
             cmd.add("-b");
             cmd.add(b);
+        }
+        // /dev : uniquement les peripheriques utiles.  Le pilote GPU du noyau
+        // n'est monte que si le mode GPU est demande : y toucher depuis le
+        // runtime peut faire paniquer le noyau (redemarrage de l'appareil).
+        List<String> devices = new ArrayList<>(Arrays.asList(
+                "/dev/null", "/dev/zero", "/dev/full", "/dev/random", "/dev/urandom",
+                "/dev/tty", "/dev/ptmx", "/dev/pts", "/dev/shm"));
+        if (gpu) {
+            devices.add("/dev/kgsl-3d0");
+            devices.add("/dev/mali0");
+            devices.add("/dev/dri");
+            devices.add("/dev/ion");
+        }
+        for (String d : devices) {
+            if (new File(d).exists()) {
+                cmd.add("-b");
+                cmd.add(d);
+            }
         }
         // Android forwards controller input; do not also open physical evdev devices.
         File inputDevices = new File(context.getFilesDir(), "linux-input");
