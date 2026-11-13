@@ -2,6 +2,21 @@
 
 Runs **SWAT 4** (Irrational Games / Paradox, 2005) on an ARM64 Android phone.
 
+> **Repository:** `https://github.com/Sweetcoinss/WMAAAAAAA`
+> (older working copy: `https://github.com/Sweetcoinss/swat4-android`)
+
+## Two editions
+
+The same code is built as two APKs; both install side by side (different
+application ids) and both download the same Linux runtime.
+
+| | `full` (main) | `free` |
+|---|---|---|
+| Application id | `fr.tibkpl.openswat4` | `fr.tibkpl.openswat4.free` |
+| Maximum render height | 1080p | 720p |
+| LAN multiplayer | yes | disabled |
+| Everything else | identical | identical |
+
 ```
 Android app (Java)            ← APK ~3 Mo : ne contient ni le jeu ni le moteur
   └─ proot ─ Debian arm64 ─ Xvfb (ecran X virtuel) ─┐
