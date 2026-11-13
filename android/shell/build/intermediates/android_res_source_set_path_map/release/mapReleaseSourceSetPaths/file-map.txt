@@ -1,8 +1,0 @@
-fr.tibkpl.shell-pngs-0 C:\Users\RDP\swat4-android\android\shell\build\generated\res\pngs\release
-fr.tibkpl.shell-updated_navigation_xml-1 C:\Users\RDP\swat4-android\android\shell\build\generated\updated_navigation_xml\release
-fr.tibkpl.shell-packageReleaseResources-2 C:\Users\RDP\swat4-android\android\shell\build\intermediates\incremental\release\packageReleaseResources\merged.dir
-fr.tibkpl.shell-packageReleaseResources-3 C:\Users\RDP\swat4-android\android\shell\build\intermediates\incremental\release\packageReleaseResources\stripped.dir
-fr.tibkpl.shell-release-4 C:\Users\RDP\swat4-android\android\shell\build\intermediates\merged_res\release\mergeReleaseResources
-fr.tibkpl.shell-main-5 C:\Users\RDP\swat4-android\android\shell\src\main\res
-fr.tibkpl.shell-release-6 C:\Users\RDP\swat4-android\android\shell\src\release\res
-gradleHome-0 C:\Users\RDP\.gradle

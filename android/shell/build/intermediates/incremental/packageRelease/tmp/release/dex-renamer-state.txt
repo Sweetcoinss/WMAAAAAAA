@@ -1,4 +1,0 @@
-#Fri Nov 13 09:20:26 UTC 2026
-base.0=C\:\\Users\\RDP\\swat4-android\\android\\shell\\build\\intermediates\\dex\\release\\mergeDexRelease\\classes.dex
-renamed.0=classes.dex
-path.0=classes.dex
