@@ -130,10 +130,21 @@ final class GameRuntime {
         if (!prootTmp.isDirectory() && !prootTmp.mkdirs()) {
             throw new IOException("Creation impossible : " + prootTmp);
         }
+        // Les bibliotheques natives doivent etre presentes : sans elles le
+        // demarrage echoue (et l'utilisateur ne voit qu'une erreur vague).
+        for (String lib : new String[]{"libproot.so", "libproot-loader.so",
+                "libtalloc.so", "libandroid-shmem.so"}) {
+            if (!new File(libDir, lib).isFile()) {
+                throw new IOException("Bibliotheque native manquante : " + lib
+                        + " (reinstaller l'application)");
+            }
+        }
 
         List<String> cmd = new ArrayList<>();
         cmd.add(libDir + "/libproot.so");
-        cmd.add("--kill-on-exit");
+        // Pas de --kill-on-exit : cette option oblige proot a utiliser ptrace
+        // pour tuer les processus enfants, ce qui provoque des panique du noyau
+        // (et donc un redemarrage) sur certains telephones.
         cmd.add("-0");
         cmd.add("--link2symlink");
         cmd.add("-r");
@@ -170,6 +181,10 @@ final class GameRuntime {
         penv.put("LD_LIBRARY_PATH", libDir);
         penv.put("PROOT_LOADER", libDir + "/libproot-loader.so");
         penv.put("PROOT_TMP_DIR", prootTmp.getAbsolutePath());
+        // Le filtre seccomp de proot est incompatible avec certains noyaux
+        // Android 12+ : il provoque une panique du noyau (redemarrage de
+        // l'appareil).  On le desactive.
+        penv.put("PROOT_NO_SECCOMP", "1");
         Log.i(TAG, "proot : " + String.join(" ", cmd));
         return pb;
     }
