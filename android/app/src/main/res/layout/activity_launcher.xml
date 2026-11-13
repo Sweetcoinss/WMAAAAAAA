@@ -198,7 +198,6 @@
                 android:textSize="11sp"
                 android:visibility="gone" />
         </LinearLayout>
-
         <Button
             android:id="@+id/controller"
             android:layout_width="match_parent"

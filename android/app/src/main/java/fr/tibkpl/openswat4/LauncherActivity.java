@@ -440,4 +440,5 @@ public class LauncherActivity extends Activity {
         super.onRequestPermissionsResult(requestCode, permissions, results);
         refresh();
     }
+
 }

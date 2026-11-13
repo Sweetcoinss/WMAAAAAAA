@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 9.4.1" type="partial_results">
+    <map id="UnsafeIntentLaunch">
+            <map id="unprotected">
+                <entry
+                    name="fr.tibkpl.shell.ShellActivity"
+                    boolean="true"/>
+            </map>
+    </map>
+    <map id="UnusedResources">
+        <entry
+            name="model"
+            string="color[ic_shell_background(U)],drawable[btn_dim(U),btn_main(U),ic_shell_foreground(U),input_bg(U),output_bg(U)],id[input(U),run(U),stop(U),diag(U),root(U),clear(U),output(U),copy(U),share(U)],layout[activity_shell(U)],mipmap[ic_launcher(U)],string[app_name(U),hint(U),input_hint(U),btn_run(U),btn_stop(U),btn_diag(U),checkbox_root(U),btn_clear(U),btn_copy(U),btn_share(U)],style[Theme_Shell(U)];f^11^12^4^13^2^14^1^15^16^17^18^5^19^1a,10^0^3;;;"/>
+    </map>
+
+</incidents>

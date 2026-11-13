@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shell SWAT 4</string>
+    <string name="hint">أداة تشخيص: تنفّذ أوامر على الهاتف وانضر النتيجة في المحادثة</string>
+    <string name="input_hint">اكتب الأمر هنا… مثال: ls /sdcard</string>
+    <string name="btn_run">تنفيذ</string>
+    <string name="btn_stop">إيقاف</string>
+    <string name="btn_diag">تشخيص</string>
+    <string name="btn_clear">مسح</string>
+    <string name="btn_copy">نسخ</string>
+    <string name="btn_share">إرسال</string>
+    <string name="checkbox_root">root</string>
+</resources>

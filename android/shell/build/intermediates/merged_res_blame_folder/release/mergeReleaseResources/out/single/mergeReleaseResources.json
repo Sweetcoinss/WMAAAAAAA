@@ -1,0 +1,30 @@
+[
+    {
+        "merged": "fr.tibkpl.shell-release-3:/layout_activity_shell.xml.flat",
+        "source": "fr.tibkpl.shell-main-4:/layout/activity_shell.xml"
+    },
+    {
+        "merged": "fr.tibkpl.shell-release-3:/drawable_output_bg.xml.flat",
+        "source": "fr.tibkpl.shell-main-4:/drawable/output_bg.xml"
+    },
+    {
+        "merged": "fr.tibkpl.shell-release-3:/drawable_ic_shell_foreground.xml.flat",
+        "source": "fr.tibkpl.shell-main-4:/drawable/ic_shell_foreground.xml"
+    },
+    {
+        "merged": "fr.tibkpl.shell-release-3:/drawable_btn_dim.xml.flat",
+        "source": "fr.tibkpl.shell-main-4:/drawable/btn_dim.xml"
+    },
+    {
+        "merged": "fr.tibkpl.shell-release-3:/mipmap-anydpi_ic_launcher.xml.flat",
+        "source": "fr.tibkpl.shell-main-4:/mipmap-anydpi/ic_launcher.xml"
+    },
+    {
+        "merged": "fr.tibkpl.shell-release-3:/drawable_btn_main.xml.flat",
+        "source": "fr.tibkpl.shell-main-4:/drawable/btn_main.xml"
+    },
+    {
+        "merged": "fr.tibkpl.shell-release-3:/drawable_input_bg.xml.flat",
+        "source": "fr.tibkpl.shell-main-4:/drawable/input_bg.xml"
+    }
+]

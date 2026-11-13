@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<incidents format="6" by="lint 9.4.1" type="incidents">
+
+    <incident
+        id="OldTargetApi"
+        severity="warning"
+        message="Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the `android.os.Build.VERSION_CODES` javadoc for details.">
+        <fix-replace
+            description="Update targetSdkVersion to 37"
+            oldString="35"
+            replacement="37"
+            priority="0"/>
+        <location
+            file="${:shell*projectDir}/build.gradle.kts"
+            line="16"
+            column="9"
+            startOffset="480"
+            endLine="16"
+            endColumn="23"
+            endOffset="494"/>
+    </incident>
+
+    <incident
+        id="GradleDependency"
+        severity="warning"
+        message="A newer version of `compileSdk` than 36 is available: 37">
+        <fix-replace
+            description="Set compileSdk to 37"
+            oldString="36"
+            replacement="37"
+            priority="0"/>
+        <location
+            file="${:shell*projectDir}/build.gradle.kts"
+            line="11"
+            column="5"
+            startOffset="373"
+            endLine="11"
+            endColumn="20"
+            endOffset="388"/>
+    </incident>
+
+    <incident
+        id="DiscouragedApi"
+        severity="warning"
+        message="Fixed screen orientations will be ignored in most cases, starting from Android 16. Android is moving toward a model where apps are expected to adapt to various orientations, display sizes, and aspect ratios.">
+        <show-url
+            description="Show https://developer.android.com/adaptive-apps"
+            url="https://developer.android.com/adaptive-apps"/>
+        <location
+            file="${:shell*release*MAIN*sourceProvider*0*manifest*0}"
+            line="19"
+            column="13"
+            startOffset="740"
+            endLine="19"
+            endColumn="49"
+            endOffset="776"/>
+    </incident>
+
+    <incident
+        id="Overdraw"
+        severity="warning"
+        message="Possible overdraw: Root element paints background `#FF0C1016` with a theme that also paints a background (inferred theme is `@style/Theme.Shell`)">
+        <location
+            file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+            line="6"
+            column="5"
+            startOffset="232"
+            endLine="6"
+            endColumn="35"
+            endOffset="262"/>
+    </incident>
+
+    <incident
+        id="MonochromeLauncherIcon"
+        severity="warning"
+        message="The application adaptive icon is missing a monochrome tag">
+        <location
+            file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/mipmap-anydpi/ic_launcher.xml"
+            line="2"
+            column="1"
+            startOffset="39"
+            endLine="5"
+            endColumn="17"
+            endOffset="263"/>
+    </incident>
+
+    <incident
+        id="ButtonStyle"
+        severity="warning"
+        message="Buttons in button bars should be borderless; use `style=&quot;?android:attr/buttonBarButtonStyle&quot;` (and `?android:attr/buttonBarStyle` on the parent)">
+        <fix-composite
+            description="Make borderless">
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="1394"
+                    endOffset="2971"/>
+            </fix-attribute>
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarButtonStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarButtonStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="1587"
+                    endOffset="2017"/>
+            </fix-attribute>
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarButtonStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarButtonStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="2027"
+                    endOffset="2502"/>
+            </fix-attribute>
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarButtonStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarButtonStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="2512"
+                    endOffset="2951"/>
+            </fix-attribute>
+        </fix-composite>
+        <location
+            file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+            line="47"
+            column="10"
+            startOffset="1588"
+            endLine="47"
+            endColumn="16"
+            endOffset="1594"/>
+    </incident>
+
+    <incident
+        id="ButtonStyle"
+        severity="warning"
+        message="Buttons in button bars should be borderless; use `style=&quot;?android:attr/buttonBarButtonStyle&quot;` (and `?android:attr/buttonBarStyle` on the parent)">
+        <fix-composite
+            description="Make borderless">
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="1394"
+                    endOffset="2971"/>
+            </fix-attribute>
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarButtonStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarButtonStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="1587"
+                    endOffset="2017"/>
+            </fix-attribute>
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarButtonStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarButtonStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="2027"
+                    endOffset="2502"/>
+            </fix-attribute>
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarButtonStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarButtonStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="2512"
+                    endOffset="2951"/>
+            </fix-attribute>
+        </fix-composite>
+        <location
+            file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+            line="59"
+            column="10"
+            startOffset="2028"
+            endLine="59"
+            endColumn="16"
+            endOffset="2034"/>
+    </incident>
+
+    <incident
+        id="ButtonStyle"
+        severity="warning"
+        message="Buttons in button bars should be borderless; use `style=&quot;?android:attr/buttonBarButtonStyle&quot;` (and `?android:attr/buttonBarStyle` on the parent)">
+        <fix-composite
+            description="Make borderless">
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="1394"
+                    endOffset="2971"/>
+            </fix-attribute>
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarButtonStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarButtonStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="1587"
+                    endOffset="2017"/>
+            </fix-attribute>
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarButtonStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarButtonStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="2027"
+                    endOffset="2502"/>
+            </fix-attribute>
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarButtonStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarButtonStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="2512"
+                    endOffset="2951"/>
+            </fix-attribute>
+        </fix-composite>
+        <location
+            file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+            line="72"
+            column="10"
+            startOffset="2513"
+            endLine="72"
+            endColumn="16"
+            endOffset="2519"/>
+    </incident>
+
+    <incident
+        id="ButtonStyle"
+        severity="warning"
+        message="Buttons in button bars should be borderless; use `style=&quot;?android:attr/buttonBarButtonStyle&quot;` (and `?android:attr/buttonBarStyle` on the parent)">
+        <fix-composite
+            description="Make borderless">
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="4698"
+                    endOffset="5794"/>
+            </fix-attribute>
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarButtonStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarButtonStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="4891"
+                    endOffset="5285"/>
+            </fix-attribute>
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarButtonStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarButtonStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="5295"
+                    endOffset="5774"/>
+            </fix-attribute>
+        </fix-composite>
+        <location
+            file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+            line="142"
+            column="10"
+            startOffset="4892"
+            endLine="142"
+            endColumn="16"
+            endOffset="4898"/>
+    </incident>
+
+    <incident
+        id="ButtonStyle"
+        severity="warning"
+        message="Buttons in button bars should be borderless; use `style=&quot;?android:attr/buttonBarButtonStyle&quot;` (and `?android:attr/buttonBarStyle` on the parent)">
+        <fix-composite
+            description="Make borderless">
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="4698"
+                    endOffset="5794"/>
+            </fix-attribute>
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarButtonStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarButtonStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="4891"
+                    endOffset="5285"/>
+            </fix-attribute>
+            <fix-attribute
+                description="Set style=&quot;?android:attr/buttonBarButtonStyle&quot;"
+                attribute="style"
+                value="?android:attr/buttonBarButtonStyle">
+                <range
+                    file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+                    startOffset="5295"
+                    endOffset="5774"/>
+            </fix-attribute>
+        </fix-composite>
+        <location
+            file="${:shell*release*MAIN*sourceProvider*0*resDir*0}/layout/activity_shell.xml"
+            line="153"
+            column="10"
+            startOffset="5296"
+            endLine="153"
+            endColumn="16"
+            endOffset="5302"/>
+    </incident>
+
+</incidents>

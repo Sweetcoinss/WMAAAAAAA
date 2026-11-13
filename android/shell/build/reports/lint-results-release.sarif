@@ -1,0 +1,1049 @@
+{
+    "$schema" : "https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/schemas/sarif-schema-2.1.0.json",
+    "version" : "2.1.0",
+    "runs" : [
+        {
+            "tool": {
+                "driver": {
+                    "name": "Android Lint",
+                    "fullName": "Android Lint (in gradle)",
+                    "version": "9.4.1",
+                    "semanticVersion": "9.4.1",
+                    "organization": "Google",
+                    "informationUri": "https://developer.android.com/studio/write/lint",
+                    "fullDescription": {
+                        "text": "Static analysis originally for Android source code but now performing general analysis"
+                    },
+                    "language": "en-US",
+                    "rules": [
+                        {
+                            "id": "ButtonStyle",
+                            "shortDescription": {
+                                "text": "Button should be borderless"
+                            },
+                            "fullDescription": {
+                                "text": "Button bars typically use a borderless style for the buttons. Set the style=\"?android:attr/buttonBarButtonStyle\" attribute on each of the buttons, and set style=\"?android:attr/buttonBarStyle\" on the parent layout",
+                                "markdown": "Button bars typically use a borderless style for the buttons. Set the `style=\"?android:attr/buttonBarButtonStyle\"` attribute on each of the buttons, and set `style=\"?android:attr/buttonBarStyle\"` on the parent layout"
+                            },
+                            "defaultConfiguration": {
+                                "level": "warning",
+                                "rank": 60
+                            },
+                            "properties": {
+                                "tags": [
+                                    "Usability"
+                                ]
+                            }
+                        },
+                        {
+                            "id": "DataExtractionRules",
+                            "shortDescription": {
+                                "text": "Missing data extraction rules"
+                            },
+                            "fullDescription": {
+                                "text": "Before Android 12, the attributes android:allowBackup and android:fullBackupContent were used to configure all forms of backup, including cloud backups, device-to-device transfers and adb backup.\n\nIn Android 12 and higher, these attributes have been deprecated and will only apply to cloud backups. You should instead use the attribute android:dataExtractionRules, specifying an @xml resource that configures which files to back up, for cloud backups and for device-to-device transfers, separately. If your minSdkVersion supports older versions, you'll still want to specify an android:fullBackupContent resource if the default behavior is not right for your app.",
+                                "markdown": "Before Android 12, the attributes `android:allowBackup` and `android:fullBackupContent` were used to configure all forms of backup, including cloud backups, device-to-device transfers and adb backup.\n\nIn Android 12 and higher, these attributes have been deprecated and will only apply to cloud backups. You should instead use the attribute `android:dataExtractionRules`, specifying an `@xml` resource that configures which files to back up, for cloud backups and for device-to-device transfers, separately. If your `minSdkVersion` supports older versions, you'll still want to specify an `android:fullBackupContent` resource if the default behavior is not right for your app."
+                            },
+                            "defaultConfiguration": {
+                                "level": "warning",
+                                "rank": 80
+                            },
+                            "properties": {
+                                "tags": [
+                                    "Security"
+                                ]
+                            }
+                        },
+                        {
+                            "id": "DiscouragedApi",
+                            "shortDescription": {
+                                "text": "Using discouraged APIs"
+                            },
+                            "fullDescription": {
+                                "text": "Discouraged APIs are allowed and are not deprecated, but they may be unfit for common use (e.g. due to slow performance or subtle behavior)."
+                            },
+                            "defaultConfiguration": {
+                                "level": "warning",
+                                "rank": 90
+                            },
+                            "properties": {
+                                "tags": [
+                                    "Correctness"
+                                ]
+                            }
+                        },
+                        {
+                            "id": "GradleDependency",
+                            "shortDescription": {
+                                "text": "Obsolete Gradle Dependency"
+                            },
+                            "fullDescription": {
+                                "text": "This detector looks for usages of libraries where the version you are using is not the current stable release. Using older versions is fine, and there are cases where you deliberately want to stick with an older version. However, you may simply not be aware that a more recent version is available, and that is what this lint check helps find."
+                            },
+                            "defaultConfiguration": {
+                                "level": "warning",
+                                "rank": 70
+                            },
+                            "properties": {
+                                "tags": [
+                                    "Correctness"
+                                ]
+                            }
+                        },
+                        {
+                            "id": "LockedOrientationActivity",
+                            "shortDescription": {
+                                "text": "Incompatible screenOrientation value"
+                            },
+                            "fullDescription": {
+                                "text": "The <activity> element should not be locked to any orientation so that users can take advantage of the multi-window environments and larger screens available on Android. To fix the issue, consider declaring the corresponding activity element with `screenOrientation=\"unspecified\"`or fullSensor attribute.",
+                                "markdown": "The `<activity>` element should not be locked to any orientation so that users can take advantage of the multi-window environments and larger screens available on Android. To fix the issue, consider declaring the corresponding activity element with `screenOrientation=\"unspecified\"`or `fullSensor` attribute."
+                            },
+                            "defaultConfiguration": {
+                                "level": "warning",
+                                "rank": 70
+                            },
+                            "properties": {
+                                "tags": [
+                                    "Correctness"
+                                ]
+                            }
+                        },
+                        {
+                            "id": "MonochromeLauncherIcon",
+                            "shortDescription": {
+                                "text": "Monochrome icon is not defined"
+                            },
+                            "fullDescription": {
+                                "text": "The system may use the coloring of the user's chosen wallpaper and theme to tint app icons. Providing a <monochrome> layer (which will be used for tinting) for every adaptive icon is strongly recommended, otherwise Android 16 QPR 2 and above will simply tint the color version of the icon, which may look unusual. Devices running earlier Android versions will (with no monochrome layer) show the untinted color icon for your app, which will look inconsistent.",
+                                "markdown": "The system may use the coloring of the user's chosen wallpaper and theme to tint app icons. Providing a `<monochrome>` layer (which will be used for tinting) for every adaptive icon is strongly recommended, otherwise Android 16 QPR 2 and above will simply tint the color version of the icon, which may look unusual. Devices running earlier Android versions will (with no monochrome layer) show the untinted color icon for your app, which will look inconsistent."
+                            },
+                            "defaultConfiguration": {
+                                "level": "warning",
+                                "rank": 50
+                            },
+                            "properties": {
+                                "tags": [
+                                    "Icons",
+                                    "Usability"
+                                ]
+                            }
+                        },
+                        {
+                            "id": "OldTargetApi",
+                            "shortDescription": {
+                                "text": "Target SDK attribute is not targeting latest version"
+                            },
+                            "fullDescription": {
+                                "text": "When your application or sdk runs on a version of Android that is more recent than your targetSdk specifies that it has been tested with, various compatibility modes kick in. This ensures that your application continues to work, but it may look out of place. For example, if the targetSdk is less than 14, your app may get an option button in the UI.\n\nTo fix this issue, set the targetSdk to the highest available value. Then test your app to make sure everything works correctly. You may want to consult the compatibility notes to see what changes apply to each version you are adding support for: https://developer.android.com/reference/android/os/Build.VERSION_CODES.html as well as follow this guide:\nhttps://developer.android.com/distribute/best-practices/develop/target-sdk.html",
+                                "markdown": "When your application or sdk runs on a version of Android that is more recent than your `targetSdk` specifies that it has been tested with, various compatibility modes kick in. This ensures that your application continues to work, but it may look out of place. For example, if the `targetSdk` is less than 14, your app may get an option button in the UI.\n\nTo fix this issue, set the `targetSdk` to the highest available value. Then test your app to make sure everything works correctly. You may want to consult the compatibility notes to see what changes apply to each version you are adding support for: https://developer.android.com/reference/android/os/Build.VERSION_CODES.html as well as follow this guide:\nhttps://developer.android.com/distribute/best-practices/develop/target-sdk.html"
+                            },
+                            "defaultConfiguration": {
+                                "level": "warning",
+                                "rank": 50
+                            },
+                            "properties": {
+                                "tags": [
+                                    "Correctness"
+                                ]
+                            }
+                        },
+                        {
+                            "id": "Overdraw",
+                            "shortDescription": {
+                                "text": "Overdraw: Painting regions more than once"
+                            },
+                            "fullDescription": {
+                                "text": "If you set a background drawable on a root view, then you should use a custom theme where the theme background is null. Otherwise, the theme background will be painted first, only to have your custom background completely cover it; this is called \"overdraw\".\n\nNOTE: This detector relies on figuring out which layouts are associated with which activities based on scanning the Java code, and it's currently doing that using an inexact pattern matching algorithm. Therefore, it can incorrectly conclude which activity the layout is associated with and then wrongly complain that a background-theme is hidden.\n\nIf you want your custom background on multiple pages, then you should consider making a custom theme with your custom background and just using that theme instead of a root element background.\n\nOf course it's possible that your custom drawable is translucent and you want it to be mixed with the background. However, you will get better performance if you pre-mix the background with your drawable and use that resulting image or color as a custom theme background instead."
+                            },
+                            "defaultConfiguration": {
+                                "level": "warning",
+                                "rank": 80
+                            },
+                            "properties": {
+                                "tags": [
+                                    "Performance"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            "originalUriBaseIds": {
+                "%SRCROOT%": {
+                    "uri": "file:///C:/Users/RDP/swat4-android/android/"
+                }
+            },
+            "results": [
+                {
+                    "ruleId": "OldTargetApi",
+                    "ruleIndex": 6,
+                    "message": {
+                        "text": "Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the android.os.Build.VERSION_CODES javadoc for details.",
+                        "markdown": "Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the `android.os.Build.VERSION_CODES` javadoc for details."
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uriBaseId": "%SRCROOT%",
+                                    "uri": "shell/build.gradle.kts"
+                                },
+                                "region": {
+                                    "startLine": 16,
+                                    "startColumn": 9,
+                                    "endLine": 16,
+                                    "endColumn": 23,
+                                    "charOffset": 480,
+                                    "charLength": 14,
+                                    "snippet": {
+                                        "text": "targetSdk = 35"
+                                    }
+                                },
+                                "contextRegion": {
+                                    "startLine": 14,
+                                    "endLine": 19,
+                                    "snippet": {
+                                        "text": "        applicationId = \"fr.tibkpl.shell\"\n        minSdk = 26\n        targetSdk = 35\n        versionCode = (System.getenv(\"SHELL_VERSION_CODE\") ?: \"1\").toInt()\n        versionName = System.getenv(\"SHELL_VERSION_NAME\") ?: \"1.0\"\n"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "fixes": [
+                        {
+                            "description": {
+                                "text": "Update targetSdkVersion to 37"
+                            },
+                            "artifactChanges": [
+                                {
+                                    "artifactLocation": {
+                                        "uriBaseId": "%SRCROOT%",
+                                        "uri": "shell/build.gradle.kts"
+                                    },
+                                    "replacements": [
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 16,
+                                                "startColumn": 21,
+                                                "charOffset": 492,
+                                                "endLine": 16,
+                                                "endColumn": 23,
+                                                "charLength": 2
+                                            },
+                                            "insertedContent": {
+                                                "text": "37\n"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "sourceContext/v1": "71181c037f21d567"
+                    }
+                },
+                {
+                    "ruleId": "GradleDependency",
+                    "ruleIndex": 3,
+                    "message": {
+                        "text": "A newer version of compileSdk than 36 is available: 37",
+                        "markdown": "A newer version of `compileSdk` than 36 is available: 37"
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uriBaseId": "%SRCROOT%",
+                                    "uri": "shell/build.gradle.kts"
+                                },
+                                "region": {
+                                    "startLine": 11,
+                                    "startColumn": 5,
+                                    "endLine": 11,
+                                    "endColumn": 20,
+                                    "charOffset": 373,
+                                    "charLength": 15,
+                                    "snippet": {
+                                        "text": "compileSdk = 36"
+                                    }
+                                },
+                                "contextRegion": {
+                                    "startLine": 9,
+                                    "endLine": 14,
+                                    "snippet": {
+                                        "text": "android {\n    namespace = \"fr.tibkpl.shell\"\n    compileSdk = 36\n\n    defaultConfig {\n"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "fixes": [
+                        {
+                            "description": {
+                                "text": "Set compileSdk to 37"
+                            },
+                            "artifactChanges": [
+                                {
+                                    "artifactLocation": {
+                                        "uriBaseId": "%SRCROOT%",
+                                        "uri": "shell/build.gradle.kts"
+                                    },
+                                    "replacements": [
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 11,
+                                                "startColumn": 18,
+                                                "charOffset": 386,
+                                                "endLine": 11,
+                                                "endColumn": 20,
+                                                "charLength": 2
+                                            },
+                                            "insertedContent": {
+                                                "text": "37\n"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "sourceContext/v1": "adafe43dc4d5c0fd"
+                    }
+                },
+                {
+                    "ruleId": "LockedOrientationActivity",
+                    "ruleIndex": 4,
+                    "message": {
+                        "text": "Expecting android:screenOrientation=\"unspecified\" or \"fullSensor\" for this activity so the user can use the application in any orientation and provide a great experience on Chrome OS devices",
+                        "markdown": "Expecting `android:screenOrientation=\"unspecified\"` or `\"fullSensor\"` for this activity so the user can use the application in any orientation and provide a great experience on Chrome OS devices"
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uriBaseId": "%SRCROOT%",
+                                    "uri": "shell/src/main/AndroidManifest.xml"
+                                },
+                                "region": {
+                                    "startLine": 19,
+                                    "startColumn": 13,
+                                    "endLine": 19,
+                                    "endColumn": 49,
+                                    "charOffset": 740,
+                                    "charLength": 36,
+                                    "snippet": {
+                                        "text": "android:screenOrientation=\"portrait\""
+                                    }
+                                },
+                                "contextRegion": {
+                                    "startLine": 17,
+                                    "endLine": 22,
+                                    "snippet": {
+                                        "text": "            android:name=\".ShellActivity\"\n            android:exported=\"true\"\n            android:screenOrientation=\"portrait\"\n            android:windowSoftInputMode=\"adjustResize\">\n            <intent-filter>\n"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "fixes": [
+                        {
+                            "description": {
+                                "text": "Set screenOrientation=\"fullSensor\""
+                            },
+                            "artifactChanges": [
+                                {
+                                    "artifactLocation": {
+                                        "uriBaseId": "%SRCROOT%",
+                                        "uri": "shell/src/main/AndroidManifest.xml"
+                                    },
+                                    "replacements": [
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 19,
+                                                "startColumn": 13,
+                                                "charOffset": 740,
+                                                "endLine": 19,
+                                                "endColumn": 49,
+                                                "charLength": 36
+                                            },
+                                            "insertedContent": {
+                                                "text": "android:screenOrientation=\"fullSensor\"\n"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "sourceContext/v1": "be8b91e6f2fd56fc"
+                    }
+                },
+                {
+                    "ruleId": "DiscouragedApi",
+                    "ruleIndex": 2,
+                    "message": {
+                        "text": "Fixed screen orientations will be ignored in most cases, starting from Android 16. Android is moving toward a model where apps are expected to adapt to various orientations, display sizes, and aspect ratios."
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uriBaseId": "%SRCROOT%",
+                                    "uri": "shell/src/main/AndroidManifest.xml"
+                                },
+                                "region": {
+                                    "startLine": 19,
+                                    "startColumn": 13,
+                                    "endLine": 19,
+                                    "endColumn": 49,
+                                    "charOffset": 740,
+                                    "charLength": 36,
+                                    "snippet": {
+                                        "text": "android:screenOrientation=\"portrait\""
+                                    }
+                                },
+                                "contextRegion": {
+                                    "startLine": 17,
+                                    "endLine": 22,
+                                    "snippet": {
+                                        "text": "            android:name=\".ShellActivity\"\n            android:exported=\"true\"\n            android:screenOrientation=\"portrait\"\n            android:windowSoftInputMode=\"adjustResize\">\n            <intent-filter>\n"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "fixes": [
+                    ],
+                    "partialFingerprints": {
+                        "sourceContext/v1": "be8b91e6f2fd56fc"
+                    }
+                },
+                {
+                    "ruleId": "DataExtractionRules",
+                    "ruleIndex": 1,
+                    "message": {
+                        "text": "The attribute android:allowBackup is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute android:dataExtractionRules specifying an @xml resource which configures cloud backups and device transfers on Android 12 and higher.",
+                        "markdown": "The attribute `android:allowBackup` is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute `android:dataExtractionRules` specifying an `@xml` resource which configures cloud backups and device transfers on Android 12 and higher."
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uriBaseId": "%SRCROOT%",
+                                    "uri": "shell/src/main/AndroidManifest.xml"
+                                },
+                                "region": {
+                                    "startLine": 10,
+                                    "startColumn": 30,
+                                    "endLine": 10,
+                                    "endColumn": 35,
+                                    "charOffset": 461,
+                                    "charLength": 5,
+                                    "snippet": {
+                                        "text": "false"
+                                    }
+                                },
+                                "contextRegion": {
+                                    "startLine": 8,
+                                    "endLine": 13,
+                                    "snippet": {
+                                        "text": "\n    <application\n        android:allowBackup=\"false\"\n        android:icon=\"@mipmap/ic_launcher\"\n        android:label=\"@string/app_name\"\n"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "fixes": [
+                        {
+                            "description": {
+                                "text": "Create data_extraction_rules.xml"
+                            },
+                            "artifactChanges": [
+                                {
+                                    "artifactLocation": {
+                                        "uriBaseId": "%SRCROOT%",
+                                        "uri": "shell/src/main/res/xml/data_extraction_rules.xml"
+                                    },
+                                    "replacements": [
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 1,
+                                                "startColumn": 1,
+                                                "charOffset": 0
+                                            },
+                                            "insertedContent": {
+                                                "text": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<!--\n   Sample data extraction rules file; uncomment and customize as necessary.\n   See https://developer.android.com/about/versions/12/backup-restore#xml-changes\n   for details.\n-->\n<data-extraction-rules>\n    <cloud-backup>\n        <!--\n        TODO: Use <include> and <exclude> to control what is backed up.\n        The domain can be file, database, sharedpref, external or root.\n        Examples:\n\n        <include domain=\"file\" path=\"file_to_include\"/>\n        <exclude domain=\"file\" path=\"file_to_exclude\"/>\n        <include domain=\"file\" path=\"include_folder\"/>\n        <exclude domain=\"file\" path=\"include_folder/file_to_exclude\"/>\n        <exclude domain=\"file\" path=\"exclude_folder\"/>\n        <include domain=\"file\" path=\"exclude_folder/file_to_include\"/>\n\n        <include domain=\"sharedpref\" path=\"include_shared_pref1.xml\"/>\n        <include domain=\"database\" path=\"db_name/file_to_include\"/>\n        <exclude domain=\"database\" path=\"db_name/include_folder/file_to_exclude\"/>\n        <include domain=\"external\" path=\"file_to_include\"/>\n        <exclude domain=\"external\" path=\"file_to_exclude\"/>\n        <include domain=\"root\" path=\"file_to_include\"/>\n        <exclude domain=\"root\" path=\"file_to_exclude\"/>\n        -->\n    </cloud-backup>\n    <!--\n    <device-transfer>\n        <include .../>\n        <exclude .../>\n    </device-transfer>\n    -->\n</data-extraction-rules>\n"
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "artifactLocation": {
+                                        "uriBaseId": "%SRCROOT%",
+                                        "uri": "shell/src/main/AndroidManifest.xml"
+                                    },
+                                    "replacements": [
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 11,
+                                                "startColumn": 9,
+                                                "charOffset": 476
+                                            },
+                                            "insertedContent": {
+                                                "text": "android:dataExtractionRules=\"@xml/data_extraction_rules\" \n"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "sourceContext/v1": "19f0e7e7bb48c0b1"
+                    }
+                },
+                {
+                    "ruleId": "Overdraw",
+                    "ruleIndex": 7,
+                    "message": {
+                        "text": "Possible overdraw: Root element paints background #FF0C1016 with a theme that also paints a background (inferred theme is @style/Theme.Shell)",
+                        "markdown": "Possible overdraw: Root element paints background `#FF0C1016` with a theme that also paints a background (inferred theme is `@style/Theme.Shell`)"
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uriBaseId": "%SRCROOT%",
+                                    "uri": "shell/src/main/res/layout/activity_shell.xml"
+                                },
+                                "region": {
+                                    "startLine": 6,
+                                    "startColumn": 5,
+                                    "endLine": 6,
+                                    "endColumn": 35,
+                                    "charOffset": 232,
+                                    "charLength": 30,
+                                    "snippet": {
+                                        "text": "android:background=\"#FF0C1016\""
+                                    }
+                                },
+                                "contextRegion": {
+                                    "startLine": 4,
+                                    "endLine": 9,
+                                    "snippet": {
+                                        "text": "    android:layout_height=\"match_parent\"\n    android:orientation=\"vertical\"\n    android:background=\"#FF0C1016\"\n    android:padding=\"12dp\">\n\n"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "sourceContext/v1": "3716966e0a3476c3"
+                    }
+                },
+                {
+                    "ruleId": "MonochromeLauncherIcon",
+                    "ruleIndex": 5,
+                    "message": {
+                        "text": "The application adaptive icon is missing a monochrome tag"
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uriBaseId": "%SRCROOT%",
+                                    "uri": "shell/src/main/res/mipmap-anydpi/ic_launcher.xml"
+                                },
+                                "region": {
+                                    "startLine": 2,
+                                    "startColumn": 1,
+                                    "endLine": 5,
+                                    "endColumn": 17,
+                                    "charOffset": 39,
+                                    "charLength": 224,
+                                    "snippet": {
+                                        "text": "<adaptive-icon xmlns:android=\"http://schemas.android.com/apk/res/android\">\n    <background android:drawable=\"@color/ic_shell_background\" />\n    <foreground android:drawable=\"@drawable/ic_shell_foreground\" />\n</adaptive-icon>"
+                                    }
+                                },
+                                "contextRegion": {
+                                    "startLine": 1,
+                                    "endLine": 6,
+                                    "snippet": {
+                                        "text": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<adaptive-icon xmlns:android=\"http://schemas.android.com/apk/res/android\">\n    <background android:drawable=\"@color/ic_shell_background\" />\n    <foreground android:drawable=\"@drawable/ic_shell_foreground\" />\n</adaptive-icon>\r\n"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "sourceContext/v1": "5c00700412b285cd"
+                    }
+                },
+                {
+                    "ruleId": "ButtonStyle",
+                    "ruleIndex": 0,
+                    "message": {
+                        "text": "Buttons in button bars should be borderless; use style=\"?android:attr/buttonBarButtonStyle\" (and ?android:attr/buttonBarStyle on the parent)",
+                        "markdown": "Buttons in button bars should be borderless; use `style=\"?android:attr/buttonBarButtonStyle\"` (and `?android:attr/buttonBarStyle` on the parent)"
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uriBaseId": "%SRCROOT%",
+                                    "uri": "shell/src/main/res/layout/activity_shell.xml"
+                                },
+                                "region": {
+                                    "startLine": 47,
+                                    "startColumn": 10,
+                                    "endLine": 47,
+                                    "endColumn": 16,
+                                    "charOffset": 1588,
+                                    "charLength": 6,
+                                    "snippet": {
+                                        "text": "Button"
+                                    }
+                                },
+                                "contextRegion": {
+                                    "startLine": 45,
+                                    "endLine": 50,
+                                    "snippet": {
+                                        "text": "        android:orientation=\"horizontal\">\n\n        <Button\n            android:id=\"@+id/run\"\n            android:layout_width=\"0dp\"\n"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "fixes": [
+                        {
+                            "description": {
+                                "text": "Make borderless"
+                            },
+                            "artifactChanges": [
+                                {
+                                    "artifactLocation": {
+                                        "uriBaseId": "%SRCROOT%",
+                                        "uri": "shell/src/main/res/layout/activity_shell.xml"
+                                    },
+                                    "replacements": [
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 42,
+                                                "startColumn": 9,
+                                                "charOffset": 1416
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarStyle\" \n"
+                                            }
+                                        },
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 49,
+                                                "startColumn": 13,
+                                                "charOffset": 1641
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarButtonStyle\" \n"
+                                            }
+                                        },
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 61,
+                                                "startColumn": 13,
+                                                "charOffset": 2082
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarButtonStyle\" \n"
+                                            }
+                                        },
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 74,
+                                                "startColumn": 13,
+                                                "charOffset": 2567
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarButtonStyle\" \n"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "sourceContext/v1": "3cc5845c3c0a35f3"
+                    }
+                },
+                {
+                    "ruleId": "ButtonStyle",
+                    "ruleIndex": 0,
+                    "message": {
+                        "text": "Buttons in button bars should be borderless; use style=\"?android:attr/buttonBarButtonStyle\" (and ?android:attr/buttonBarStyle on the parent)",
+                        "markdown": "Buttons in button bars should be borderless; use `style=\"?android:attr/buttonBarButtonStyle\"` (and `?android:attr/buttonBarStyle` on the parent)"
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uriBaseId": "%SRCROOT%",
+                                    "uri": "shell/src/main/res/layout/activity_shell.xml"
+                                },
+                                "region": {
+                                    "startLine": 59,
+                                    "startColumn": 10,
+                                    "endLine": 59,
+                                    "endColumn": 16,
+                                    "charOffset": 2028,
+                                    "charLength": 6,
+                                    "snippet": {
+                                        "text": "Button"
+                                    }
+                                },
+                                "contextRegion": {
+                                    "startLine": 57,
+                                    "endLine": 62,
+                                    "snippet": {
+                                        "text": "            android:textStyle=\"bold\" />\n\n        <Button\n            android:id=\"@+id/stop\"\n            android:layout_width=\"0dp\"\n"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "fixes": [
+                        {
+                            "description": {
+                                "text": "Make borderless"
+                            },
+                            "artifactChanges": [
+                                {
+                                    "artifactLocation": {
+                                        "uriBaseId": "%SRCROOT%",
+                                        "uri": "shell/src/main/res/layout/activity_shell.xml"
+                                    },
+                                    "replacements": [
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 42,
+                                                "startColumn": 9,
+                                                "charOffset": 1416
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarStyle\" \n"
+                                            }
+                                        },
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 49,
+                                                "startColumn": 13,
+                                                "charOffset": 1641
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarButtonStyle\" \n"
+                                            }
+                                        },
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 61,
+                                                "startColumn": 13,
+                                                "charOffset": 2082
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarButtonStyle\" \n"
+                                            }
+                                        },
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 74,
+                                                "startColumn": 13,
+                                                "charOffset": 2567
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarButtonStyle\" \n"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "sourceContext/v1": "ffd53d19d5655f00"
+                    }
+                },
+                {
+                    "ruleId": "ButtonStyle",
+                    "ruleIndex": 0,
+                    "message": {
+                        "text": "Buttons in button bars should be borderless; use style=\"?android:attr/buttonBarButtonStyle\" (and ?android:attr/buttonBarStyle on the parent)",
+                        "markdown": "Buttons in button bars should be borderless; use `style=\"?android:attr/buttonBarButtonStyle\"` (and `?android:attr/buttonBarStyle` on the parent)"
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uriBaseId": "%SRCROOT%",
+                                    "uri": "shell/src/main/res/layout/activity_shell.xml"
+                                },
+                                "region": {
+                                    "startLine": 72,
+                                    "startColumn": 10,
+                                    "endLine": 72,
+                                    "endColumn": 16,
+                                    "charOffset": 2513,
+                                    "charLength": 6,
+                                    "snippet": {
+                                        "text": "Button"
+                                    }
+                                },
+                                "contextRegion": {
+                                    "startLine": 70,
+                                    "endLine": 75,
+                                    "snippet": {
+                                        "text": "            android:textColor=\"#FFE6EDF5\" />\n\n        <Button\n            android:id=\"@+id/diag\"\n            android:layout_width=\"0dp\"\n"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "fixes": [
+                        {
+                            "description": {
+                                "text": "Make borderless"
+                            },
+                            "artifactChanges": [
+                                {
+                                    "artifactLocation": {
+                                        "uriBaseId": "%SRCROOT%",
+                                        "uri": "shell/src/main/res/layout/activity_shell.xml"
+                                    },
+                                    "replacements": [
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 42,
+                                                "startColumn": 9,
+                                                "charOffset": 1416
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarStyle\" \n"
+                                            }
+                                        },
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 49,
+                                                "startColumn": 13,
+                                                "charOffset": 1641
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarButtonStyle\" \n"
+                                            }
+                                        },
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 61,
+                                                "startColumn": 13,
+                                                "charOffset": 2082
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarButtonStyle\" \n"
+                                            }
+                                        },
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 74,
+                                                "startColumn": 13,
+                                                "charOffset": 2567
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarButtonStyle\" \n"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "sourceContext/v1": "7510944a63f471d5"
+                    }
+                },
+                {
+                    "ruleId": "ButtonStyle",
+                    "ruleIndex": 0,
+                    "message": {
+                        "text": "Buttons in button bars should be borderless; use style=\"?android:attr/buttonBarButtonStyle\" (and ?android:attr/buttonBarStyle on the parent)",
+                        "markdown": "Buttons in button bars should be borderless; use `style=\"?android:attr/buttonBarButtonStyle\"` (and `?android:attr/buttonBarStyle` on the parent)"
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uriBaseId": "%SRCROOT%",
+                                    "uri": "shell/src/main/res/layout/activity_shell.xml"
+                                },
+                                "region": {
+                                    "startLine": 142,
+                                    "startColumn": 10,
+                                    "endLine": 142,
+                                    "endColumn": 16,
+                                    "charOffset": 4892,
+                                    "charLength": 6,
+                                    "snippet": {
+                                        "text": "Button"
+                                    }
+                                },
+                                "contextRegion": {
+                                    "startLine": 140,
+                                    "endLine": 145,
+                                    "snippet": {
+                                        "text": "        android:orientation=\"horizontal\">\n\n        <Button\n            android:id=\"@+id/copy\"\n            android:layout_width=\"0dp\"\n"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "fixes": [
+                        {
+                            "description": {
+                                "text": "Make borderless"
+                            },
+                            "artifactChanges": [
+                                {
+                                    "artifactLocation": {
+                                        "uriBaseId": "%SRCROOT%",
+                                        "uri": "shell/src/main/res/layout/activity_shell.xml"
+                                    },
+                                    "replacements": [
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 137,
+                                                "startColumn": 9,
+                                                "charOffset": 4720
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarStyle\" \n"
+                                            }
+                                        },
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 144,
+                                                "startColumn": 13,
+                                                "charOffset": 4946
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarButtonStyle\" \n"
+                                            }
+                                        },
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 155,
+                                                "startColumn": 13,
+                                                "charOffset": 5351
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarButtonStyle\" \n"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "sourceContext/v1": "3bdd8d99025dd528"
+                    }
+                },
+                {
+                    "ruleId": "ButtonStyle",
+                    "ruleIndex": 0,
+                    "message": {
+                        "text": "Buttons in button bars should be borderless; use style=\"?android:attr/buttonBarButtonStyle\" (and ?android:attr/buttonBarStyle on the parent)",
+                        "markdown": "Buttons in button bars should be borderless; use `style=\"?android:attr/buttonBarButtonStyle\"` (and `?android:attr/buttonBarStyle` on the parent)"
+                    },
+                    "locations": [
+                        {
+                            "physicalLocation": {
+                                "artifactLocation": {
+                                    "uriBaseId": "%SRCROOT%",
+                                    "uri": "shell/src/main/res/layout/activity_shell.xml"
+                                },
+                                "region": {
+                                    "startLine": 153,
+                                    "startColumn": 10,
+                                    "endLine": 153,
+                                    "endColumn": 16,
+                                    "charOffset": 5296,
+                                    "charLength": 6,
+                                    "snippet": {
+                                        "text": "Button"
+                                    }
+                                },
+                                "contextRegion": {
+                                    "startLine": 151,
+                                    "endLine": 156,
+                                    "snippet": {
+                                        "text": "            android:textColor=\"#FFE6EDF5\" />\n\n        <Button\n            android:id=\"@+id/share\"\n            android:layout_width=\"0dp\"\n"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "fixes": [
+                        {
+                            "description": {
+                                "text": "Make borderless"
+                            },
+                            "artifactChanges": [
+                                {
+                                    "artifactLocation": {
+                                        "uriBaseId": "%SRCROOT%",
+                                        "uri": "shell/src/main/res/layout/activity_shell.xml"
+                                    },
+                                    "replacements": [
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 137,
+                                                "startColumn": 9,
+                                                "charOffset": 4720
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarStyle\" \n"
+                                            }
+                                        },
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 144,
+                                                "startColumn": 13,
+                                                "charOffset": 4946
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarButtonStyle\" \n"
+                                            }
+                                        },
+                                        {
+                                            "deletedRegion": {
+                                                "startLine": 155,
+                                                "startColumn": 13,
+                                                "charOffset": 5351
+                                            },
+                                            "insertedContent": {
+                                                "text": "style=\"?android:attr/buttonBarButtonStyle\" \n"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    "partialFingerprints": {
+                        "sourceContext/v1": "ef86ae7531f8d0fa"
+                    }
+                }
+            ]
+        }
+    ]
+}
