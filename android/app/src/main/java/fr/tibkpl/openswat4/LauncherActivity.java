@@ -137,13 +137,17 @@ public class LauncherActivity extends Activity {
 
         // Detection automatique : le jeu est souvent deja sur le telephone, on
         // le cherche pour eviter d'avoir a parcourir l'arborescence a la main.
-        if (gameDir == null && !forcePick && !detectionDone) {
+        if (gameDir == null && !forcePick && !detectionDone && hasStorageAccess()) {
             detectionDone = true;
-            gameDir = Swat4Installer.detectGame();
-            if (gameDir != null) {
-                Swat4Installer.rememberGameDir(this, gameDir);
-                status.setText(getString(R.string.status_detected, gameDir.getAbsolutePath()));
-                return;
+            try {
+                gameDir = Swat4Installer.detectGame();
+                if (gameDir != null) {
+                    Swat4Installer.rememberGameDir(this, gameDir);
+                    status.setText(getString(R.string.status_detected, gameDir.getAbsolutePath()));
+                    return;
+                }
+            } catch (Exception e) {
+                Log.w(TAG, "Detection error", e);
             }
         }
 
