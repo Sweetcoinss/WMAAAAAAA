@@ -50,13 +50,26 @@ final class GameRuntime {
         return new File(dir != null ? dir : context.getFilesDir(), "swat4.log");
     }
 
-    /** Rendu GPU possible : GPU Adreno accessible (interface KGSL) et Mesa Turnip present. */
-    boolean gpuAvailable() {
-        return new File("/dev/kgsl-3d0").canRead()
-                && new File(config.rootfsDir, "opt/turnip/lib").isDirectory();
+    /**
+     * Rendu GPU possible : le pilote Vulkan du mode demande est present dans le
+     * runtime et le noeud du pilote noyau est accessible.
+     *
+     * @param mode "turnip" (Adreno), "mali" (Arm Mali) ou "software"
+     */
+    boolean gpuAvailable(String mode) {
+        if (DeviceProfile.RENDERER_TURNIP.equals(mode)) {
+            return new File("/dev/kgsl-3d0").canRead()
+                    && new File(config.rootfsDir, "opt/turnip/lib").isDirectory();
+        }
+        if (DeviceProfile.RENDERER_MALI.equals(mode)) {
+            return new File("/dev/mali0").canRead()
+                    && new File(config.rootfsDir, "opt/mali/libvulkan_malisx2.so").isFile();
+        }
+        return false;
     }
 
-    java.lang.Process start(int width, int height, int inputPort, boolean gpu) throws IOException {
+    java.lang.Process start(int width, int height, int inputPort, boolean gpu,
+                             String renderer, int targetFps) throws IOException {
         List<String> binds = new ArrayList<>();
         binds.add(config.gameRoot.getAbsolutePath() + ":/game");
         binds.add(config.homeDir.getAbsolutePath() + ":/home/ut");
@@ -67,7 +80,8 @@ final class GameRuntime {
         env.add("SWAT4_WIDTH=" + width);
         env.add("SWAT4_HEIGHT=" + height);
         env.add("SWAT4_INPUT_PORT=" + inputPort);
-        env.add("SWAT4_RENDERER=" + (gpu ? "gpu" : "software"));
+        env.add("SWAT4_RENDERER=" + (gpu ? renderer : "software"));
+        env.add("SWAT4_FPS=" + targetFps);
         env.add("SWAT4_LOG_DIR=/logs");
         env.add("SWAT4_GAME_DIR=/game");
         env.add("SDL_JOYSTICK_HIDAPI=0");
@@ -85,14 +99,16 @@ final class GameRuntime {
      * Prepare le prefixe Wine et les reglages du jeu (une fois, au premier
      * lancement).  Tourne dans le rootfs : le prefixe doit etre cree par Wine.
      */
-    void prepareWine(int width, int height) throws IOException {
+    void prepareWine(int width, int height, int targetFps) throws IOException {
         List<String> binds = new ArrayList<>();
         binds.add(config.gameRoot.getAbsolutePath() + ":/game");
         binds.add(config.homeDir.getAbsolutePath() + ":/home/ut");
         List<String> env = new ArrayList<>();
         env.add("HOME=/home/ut");
+        env.add("SWAT4_FPS=" + targetFps);
         ProcessBuilder pb = proot(context, config.rootfsDir, binds, env, "/game",
-                "/opt/ut/setup-wine.sh", "/game", String.valueOf(width), String.valueOf(height));
+                "/opt/ut/setup-wine.sh", "/game", String.valueOf(width), String.valueOf(height),
+                String.valueOf(targetFps));
         pb.redirectErrorStream(true);
         pb.redirectOutput(new File(config.rootfsDir, "tmp/setup-wine.log"));
         process = pb.start();

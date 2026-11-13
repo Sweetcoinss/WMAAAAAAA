@@ -279,7 +279,7 @@ public class LauncherActivity extends Activity {
         driverLabel.setText(R.string.graphics_driver);
         content.addView(driverLabel);
         Spinner driver = new Spinner(this);
-        String[] rendererIds = {"auto", "turnip", "software"};
+        String[] rendererIds = {"auto", "turnip", "mali", "software"};
         String[] rendererLabels = getResources().getStringArray(R.array.graphics_drivers);
         driver.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, rendererLabels));
         for (int i = 0; i < rendererIds.length; i++) if (rendererIds[i].equals(GameData.getRenderer(this))) driver.setSelection(i);
@@ -311,8 +311,15 @@ public class LauncherActivity extends Activity {
 
     private void updateResolutionButton() {
         resolutionButton.setText(getString(R.string.graphics_summary, GameData.getRenderHeight(this),
-                getResources().getStringArray(R.array.graphics_drivers)[
-                        "software".equals(GameData.getRenderer(this)) ? 2 : "turnip".equals(GameData.getRenderer(this)) ? 1 : 0]));
+                getResources().getStringArray(R.array.graphics_drivers)[rendererIndex()]));
+    }
+
+    /** Index de l'entree de pilote correspondant au reglage enregistre. */
+    private int rendererIndex() {
+        String asked = GameData.getRenderer(this);
+        String[] ids = {"auto", "turnip", "mali", "software"};
+        for (int i = 0; i < ids.length; i++) if (ids[i].equals(asked)) return i;
+        return 0;
     }
 
     private boolean hasStorageAccess() {

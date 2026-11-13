@@ -1,7 +1,7 @@
 #!/bin/sh
 # Prepare le prefixe Wine et les reglages de SWAT 4 pour l'ecran X virtuel.
 #
-# Usage : setup-wine.sh <dossier du jeu> [largeur] [hauteur]
+# Usage : setup-wine.sh <dossier du jeu> [largeur] [hauteur] [images/s]
 #
 # Le prefixe Wine est cree une seule fois (wineboot).  Le jeu est un binaire
 # i386 : Wine 32 bits de Proton tourne sous Box86.
@@ -9,6 +9,7 @@ set -e
 GAME_DIR=${1:-/game}
 W=${2:-1280}
 H=${3:-720}
+FPS=${4:-30}
 PROTON_DIR=/opt/wine
 WINEPREFIX="$HOME/.wine"
 
@@ -76,6 +77,14 @@ if [ -f "$INI" ]; then
     set_ini "WinDrv.WindowsClient" "MenuViewportY" "$H"
     # Plein ecran : le jeu est rendu dans la fenetre X, pas sur l'ecran Android
     set_ini "WinDrv.WindowsClient" "StartupFullscreen" "False"
+    # Debit d'images stable : le moteur (UE2) dort le temps restant du budget
+    # d'image quand une image a ete rendue plus vite que MinDesiredFrameRate
+    # (voir UWindowsClient::MinDesiredFrameRate et la boucle de tick du moteur).
+    # C'est ce reglage qui evite les variations de debit sur ces telephones.
+    set_ini "WinDrv.WindowsClient" "MinDesiredFrameRate" "$(printf '%d.000000' "$FPS")"
+    # Pas de synchronisation verticale logicielle : l'ecran X virtuel n'a pas
+    # de balayage, le rythme est impose par MinDesiredFrameRate.
+    set_ini "D3DDrv.D3DRenderDevice" "UseVSync" "False"
     # Pas d'assistant de premier lancement (il demande une resolution)
     set_ini "FirstRun" "FirstRun" "0"
     # Sensibilite de la souris : le pont tactile envoie des deplacements relatifs

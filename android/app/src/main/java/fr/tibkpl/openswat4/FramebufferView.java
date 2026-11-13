@@ -25,10 +25,10 @@ final class FramebufferView extends GLSurfaceView {
 
     private final FbRenderer renderer;
 
-    FramebufferView(Context context, File framebufferFile) {
+    FramebufferView(Context context, File framebufferFile, int targetFps) {
         super(context);
         setEGLContextClientVersion(2);
-        renderer = new FbRenderer(framebufferFile);
+        renderer = new FbRenderer(framebufferFile, targetFps);
         setRenderer(renderer);
         setRenderMode(RENDERMODE_CONTINUOUSLY);
         setFocusable(false);
@@ -55,9 +55,14 @@ final class FramebufferView extends GLSurfaceView {
         private boolean textureAllocated;
         private FloatBuffer quad;
         private long lastAttempt;
+        /** Intervalle minimal entre deux envois d'image (stabilise l'affichage). */
+        private final long frameIntervalNanos;
+        private long lastFrameNanos;
 
-        FbRenderer(File file) {
+        FbRenderer(File file, int targetFps) {
             this.file = file;
+            int fps = targetFps > 0 ? targetFps : 30;
+            this.frameIntervalNanos = 1_000_000_000L / fps;
         }
 
         @Override
@@ -84,6 +89,16 @@ final class FramebufferView extends GLSurfaceView {
 
         @Override
         public void onDrawFrame(GL10 unused) {
+            // Limiteur d'affichage : le jeu est lui-meme limite en interne
+            // (MinDesiredFrameRate). Re-telecharger l'image 60 fois par seconde
+            // alors que le moteur en produit 30 consommerait deux fois plus de
+            // GPU et de batterie pour un resultat identique.
+            long now = System.nanoTime();
+            if (lastFrameNanos != 0 && now - lastFrameNanos < frameIntervalNanos) {
+                return;
+            }
+            lastFrameNanos = now;
+
             GLES20.glClearColor(0f, 0f, 0f, 1f);
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
             if (pixels == null && !openFramebuffer()) return;

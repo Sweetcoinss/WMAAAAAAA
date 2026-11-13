@@ -18,6 +18,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 BOX86_VERSION=v0.3.8
 WINE_VERSION=11.21
+MALISX2_VERSION=0.5.0
 
 # 1. Bibliotheques systeme du runtime
 apt-get update -q
@@ -25,6 +26,7 @@ apt-get install -y -q --no-install-recommends \
     libstdc++6 libatomic1 libgl1 libglx0 libopengl0 libgl1-mesa-dri libglx-mesa0 libegl1 \
     libvulkan1 libasound2t64 libx11-6 libxext6 libxcursor1 libxi6 libxfixes3 libxrandr2 \
     libxss1 libxtst6 xvfb x11-xkb-utils xkb-data 7zip unshield mawk \
+    libdrm2 libgbm1 \
     gcc g++ make binutils libc6-dev libx11-dev libxtst-dev libsdl3-dev pkg-config \
     cmake git wget ca-certificates xz-utils python3 \
     libpng-dev libncurses-dev
@@ -60,7 +62,8 @@ cd src
 # (ARM_DYNAREC), qui assure la vitesse, reste activee.
 sed -i -e 's/ -mfpu=[a-zA-Z0-9.+-]*//g' \
        -e 's/ -mfloat-abi=hard//g' \
-       -e 's/^add_definitions(-marm)$//' \
+       -e 's/ -marm//g' \
+       -e 's/^[[:space:]]*add_definitions(-marm)[[:space:]]*$//' \
        CMakeLists.txt
 mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release -DARM64=ON -DARM_DYNAREC=ON -DLD80BITS=0 .. >/dev/null
@@ -133,14 +136,42 @@ done
 echo "Wine elague : $(du -sh /opt/wine | cut -f1)"
 
 # ---------------------------------------------------------------------------
-# 7. Rootfs minimal : uniquement les fichiers utilises (fermeture des dependances)
+# 7. Pilote Vulkan malisx2 (GPU Arm Mali)
+#    Turnip ne parle qu'aux GPU Qualcomm Adreno.  Les GPU Arm Mali
+#    (Helio G70 / Mali-G52 du Realme C25) utilisent le pilote noyau
+#    mali_kbase expose par /dev/mali0 : malisx2 (Mesa PanVK) le pilote.
+# ---------------------------------------------------------------------------
+echo "=== malisx2 $MALISX2_VERSION (Arm Mali) ==="
+mkdir -p /tmp/malisx2 && cd /tmp/malisx2
+wget -q "https://github.com/bmdhacks/malisx2/releases/download/v$MALISX2_VERSION/malisx2-$MALISX2_VERSION-aarch64.tar.gz"
+tar -xzf "malisx2-$MALISX2_VERSION-aarch64.tar.gz"
+mkdir -p /opt/mali
+cp "malisx2/$MALISX2_VERSION/libvulkan_malisx2.so" /opt/mali/
+# Le manifeste livre designe le chemin d'installation d'origine
+# (/storage/malisx2/<version>) : on ecrit le notre.
+cat > /opt/mali/malisx2_icd.aarch64.json <<'EOF'
+{
+    "ICD": {
+        "api_version": "1.3.0",
+        "library_arch": "64",
+        "library_path": "/opt/mali/libvulkan_malisx2.so"
+    },
+    "file_format_version": "1.0.1"
+}
+EOF
+cp "malisx2/$MALISX2_VERSION/NOTICE.txt" /opt/mali/ 2>/dev/null || true
+cd /tmp && rm -rf /tmp/malisx2
+echo "malisx2 : $(du -h /opt/mali/libvulkan_malisx2.so | cut -f1)"
+
+# ---------------------------------------------------------------------------
+# 8. Rootfs minimal : uniquement les fichiers utilises (fermeture des dependances)
 # ---------------------------------------------------------------------------
 mkdir -p "$OUT"
 sh "$RUNTIME/mkmin.sh" /tmp/rootfs
 echo "nameserver 1.1.1.1" > /tmp/rootfs/etc/resolv.conf
 
 # ---------------------------------------------------------------------------
-# 8. Liste des paquets Debian redistribues (licences, sources : https://sources.debian.org)
+# 9. Liste des paquets Debian redistribues (licences, sources : https://sources.debian.org)
 # ---------------------------------------------------------------------------
 (cd /tmp/rootfs && find . -type f -o -type l) | sed 's|^\.||' | grep -v '^/opt/' \
     | xargs dpkg -S 2>/dev/null | cut -d: -f1 | tr ',' '\n' | sed 's/ //g' | sort -u > /tmp/pkgs
@@ -154,7 +185,7 @@ done < /tmp/pkgs
 cp /tmp/rootfs/usr/share/doc/openswat4/packages.txt "$OUT/packages.txt"
 
 # ---------------------------------------------------------------------------
-# 9. Archive (.tgz et non .tar.gz : AGP decompresse les assets .gz)
+# 10. Archive (.tgz et non .tar.gz : AGP decompresse les assets .gz)
 # ---------------------------------------------------------------------------
 tar -C /tmp/rootfs --numeric-owner -czf "$OUT/rootfs.tgz" .
 chmod 644 "$OUT/rootfs.tgz"

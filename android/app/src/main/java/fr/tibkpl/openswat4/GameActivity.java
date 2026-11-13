@@ -116,15 +116,21 @@ public class GameActivity extends Activity {
 
             controllerMonitor = new ControllerMonitor(this, input::resetController);
 
+            // Profil de l'appareil : type de GPU (donc pilote Vulkan), resolution
+            // interne et debit d'images cible.  La resolution choisie par
+            // l'utilisateur prime ; sinon on prend celle du profil.
+            DeviceProfile profile = DeviceProfile.detect(this, config.rootfsDir);
+            int targetFps = profile.targetFps;
             Point screen = screenSize();
             // Hauteur de rendu choisie (largeur au format de l'ecran, donc 16:9 sur un ecran
             // 16:9) ; l'image est ensuite agrandie a la taille de l'ecran.
             int height = Math.min(GameData.getRenderHeight(this), screen.y);
+            if (height <= 0) height = Math.min(profile.renderHeight, screen.y);
             int width = Math.round(height * (float) screen.x / screen.y) & ~1;
             input.setPointerBounds(width, height);
 
             runtime.framebufferFile().delete();
-            FramebufferView view = new FramebufferView(this, runtime.framebufferFile());
+            FramebufferView view = new FramebufferView(this, runtime.framebufferFile(), targetFps);
             view.setOnTouchListener((v, event) -> input.onTouch(event, width, height, v.getWidth(), v.getHeight()));
             root.addView(view, 0, new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
@@ -141,16 +147,16 @@ public class GameActivity extends Activity {
             updateInputModeButton();
             // Prefixe Wine + reglages du jeu (resolution, fenetre, sensibilite)
             try {
-                runtime.prepareWine(width, height);
+                runtime.prepareWine(width, height, targetFps);
             } catch (IOException e) {
                 Log.e(TAG, "Prefixe Wine", e);
             }
             boolean retry = getIntent().getBooleanExtra(EXTRA_SOFTWARE_RETRY, false);
-            String renderer = GameData.getRenderer(this);
-            boolean gpu = !retry && runtime.gpuAvailable() && !"software".equals(renderer)
-                    && ("turnip".equals(renderer) || !GameData.isGpuFailed(this));
-            Log.i(TAG, "Rendu " + (gpu ? "GPU (Turnip + Zink)" : "logiciel") + ", " + width + "x" + height);
-            java.lang.Process process = runtime.start(width, height, input.port(), gpu);
+            String mode = DeviceProfile.rendererFor(this, profile, retry || GameData.isGpuFailed(this));
+            boolean gpu = !"software".equals(mode) && runtime.gpuAvailable(mode);
+            Log.i(TAG, "Rendu " + mode + " (" + profile.gpuName + "), " + width + "x" + height
+                    + " @" + targetFps + " i/s");
+            java.lang.Process process = runtime.start(width, height, input.port(), gpu, mode, targetFps);
             if (!resumed) {
                 input.setPaused(true);
                 audio.setPaused(true);

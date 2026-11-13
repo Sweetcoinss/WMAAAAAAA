@@ -48,17 +48,35 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# --- Rendu GPU (Adreno) : OpenGL -> Zink -> Vulkan Turnip --------------------
+# --- Rendu GPU : OpenGL -> Zink -> Vulkan (Turnip sur Adreno, malisx2 sur Mali)
 # Xvfb n'a pas de DRI3 : Zink passe par le chemin "drisw" (LIBGL_KOPPER_DRI2)
 # et la presentation Vulkan se fait en copie logicielle (MESA_VK_WSI_DEBUG=sw).
-if [ "$SWAT4_RENDERER" = "gpu" ] && [ -d /opt/turnip ] && [ -r /dev/kgsl-3d0 ]; then
+#   turnip   : GPU Qualcomm Adreno  (/dev/kgsl-3d0, pilote noyau KGSL)
+#   mali     : GPU Arm Mali        (/dev/mali0,    pilote noyau mali_kbase)
+#   software : rendu Mesa llvmpipe, tres lent mais fonctionnel
+RENDERER=${SWAT4_RENDERER:-software}
+if [ "$RENDERER" = "turnip" ] && [ -d /opt/turnip ] && [ -r /dev/kgsl-3d0 ]; then
     export LD_LIBRARY_PATH=/opt/turnip/lib:${LD_LIBRARY_PATH:-}
     export __GLX_VENDOR_LIBRARY_NAME=mesa
     export MESA_LOADER_DRIVER_OVERRIDE=zink
     export LIBGL_KOPPER_DRI2=1
     export MESA_VK_WSI_DEBUG=sw
     export VK_ICD_FILENAMES=/opt/turnip/share/vulkan/icd.d/freedreno_icd.aarch64.json
+    export VK_DRIVER_FILES=/opt/turnip/share/vulkan/icd.d/freedreno_icd.aarch64.json
     export XDG_RUNTIME_DIR=/tmp
+elif [ "$RENDERER" = "mali" ] && [ -f /opt/mali/libvulkan_malisx2.so ] && [ -r /dev/mali0 ]; then
+    export LD_LIBRARY_PATH=/opt/mali:${LD_LIBRARY_PATH:-}
+    export __GLX_VENDOR_LIBRARY_NAME=mesa
+    export MESA_LOADER_DRIVER_OVERRIDE=zink
+    export LIBGL_KOPPER_DRI2=1
+    export MESA_VK_WSI_DEBUG=sw
+    export VK_ICD_FILENAMES=/opt/mali/malisx2_icd.aarch64.json
+    export VK_DRIVER_FILES=/opt/mali/malisx2_icd.aarch64.json
+    export XDG_RUNTIME_DIR=/tmp
+else
+    echo "Rendu logiciel (llvmpipe) : $RENDERER" >&2
+    export LIBGL_ALWAYS_SOFTWARE=1
+    export GALLIUM_DRIVER=llvmpipe
 fi
 
 # --- Wine ------------------------------------------------------------------

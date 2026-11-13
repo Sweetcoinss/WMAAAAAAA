@@ -56,10 +56,11 @@
     <string name="graphics_fps">Afficher les FPS du moteur</string>
     <string name="graphics_apply">Appliquer</string>
     <string name="graphics_summary">Graphismes : %1$dp · %2$s</string>
-    <string name="graphics_help">Pour améliorer la fluidité, essayez Turnip et 540p. Le rendu logiciel sert au dépannage et sera plus lent. Le pilote et la résolution prennent effet au prochain lancement ; les FPS changent dès le retour au jeu.</string>
+    <string name="graphics_help">Le pilote Vulkan est choisi automatiquement : Turnip pour les GPU Qualcomm Adreno, malisx2 pour les GPU Arm Mali. En cas d’image noire ou de plantage au démarrage, repassez en « Logiciel » (plus lent). Pour une fluidité constante, utilisez 540p sur les téléphones d’entrée de gamme : le moteur impose alors un rythme d’images fixe (MinDesiredFrameRate).</string>
     <string-array name="graphics_drivers">
         <item>Automatique</item>
-        <item>Vulkan · Turnip intégré</item>
+        <item>Vulkan · Turnip (Adreno)</item>
+        <item>Vulkan · malisx2 (Mali)</item>
         <item>Logiciel · dépannage</item>
     </string-array>
     <string-array name="graphics_resolutions">

@@ -86,4 +86,7 @@ copy /opt/ut
 mkdir -p "$OUT/opt"
 cp -a /opt/box86 "$OUT/opt/"
 cp -a /opt/wine "$OUT/opt/"
+# Pilote Vulkan pour les GPU Arm Mali (malisx2) : optionnel, absent sur les
+# telephones Qualcomm.
+[ -d /opt/mali ] && cp -a /opt/mali "$OUT/opt/"
 echo "termine : $(du -sh "$OUT" | cut -f1)"
