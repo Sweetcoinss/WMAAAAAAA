@@ -25,7 +25,7 @@ apt-get install -y -q --no-install-recommends \
     libstdc++6 libatomic1 libgl1 libglx0 libopengl0 libgl1-mesa-dri libglx-mesa0 libegl1 \
     libvulkan1 libasound2t64 libx11-6 libxext6 libxcursor1 libxi6 libxfixes3 libxrandr2 \
     libxss1 libxtst6 xvfb x11-xkb-utils xkb-data 7zip unshield mawk \
-    gcc g++ libc6-dev libx11-dev libxtst-dev libsdl3-dev pkg-config \
+    gcc g++ make libc6-dev libx11-dev libxtst-dev libsdl3-dev pkg-config \
     cmake git wget ca-certificates xz-utils python3 \
     libpng-dev libncurses-dev
 
@@ -54,30 +54,25 @@ git clone --depth 1 --branch "$BOX86_VERSION" https://github.com/ptitSeb/box86.g
     || git clone --depth 1 https://github.com/ptitSeb/box86.git src
 cd src
 mkdir -p build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DLD80BITS=0 -DNOALTL=1 .. >/dev/null
+cmake -DCMAKE_BUILD_TYPE=Release -DARM64=ON -DLD80BITS=0 .. >/dev/null
 make -j"$(nproc)" >/dev/null
 install -m 755 box86 /opt/box86/box86
-install -m 755 libbox86.so* /opt/box86/ 2>/dev/null || true
+# La version standard de Box86 est un executable autonome (la variante BOX86LIB
+# qui produit libbox86.so n'est pas utilisee) : rien d'autre a installer.
+if [ ! -x /opt/box86/box86 ]; then
+    echo "ECHEC binaire Box86 absent" >&2
+    exit 3
+fi
+echo "Box86 : $(du -h /opt/box86/box86 | cut -f1)"
 cd /tmp && rm -rf /tmp/box86
 
 # ---------------------------------------------------------------------------
-# 5. Bibliotheques C i386 : le binaire Wine et le jeu sont i386, Box86
-#    execute leur glibc i386 (Debian i386) traduite en ARM64.
+# 5. Bibliotheques C i386 : NON NECESSAIRE
+#    Box86 emule lui-meme libc.so.6 / libdl.so.2 / libpthread.so.0 / libm.so.6
+#    (voir essential_libs dans les sources de Box86) : une glibc i386 reelle
+#    dans le chemin serait ignoree, voireiverse, et coute 50 Mo.  On ne met
+#    donc que l'arborescence Box86.
 # ---------------------------------------------------------------------------
-echo "=== glibc i386 ==="
-dpkg --add-architecture i386
-apt-get update -q
-mkdir -p /tmp/i386 && cd /tmp/i386
-apt-get download -q libc6:i386 libgcc-s1:i386 libstdc++6:i386 2>/dev/null || \
-    apt-get download -q libc6:i386
-mkdir -p /opt/box86/i386
-for d in *.deb; do dpkg-deb -x "$d" /opt/box86/i386; done
-# Les bibliotheques i386 sont dans lib/i386-linux-gnu
-if [ -d /opt/box86/i386/lib/i386-linux-gnu ]; then
-    mkdir -p /opt/box86/i386/lib
-    cp -a /opt/box86/i386/lib/i386-linux-gnu/. /opt/box86/i386/lib/
-fi
-cd /tmp && rm -rf /tmp/i386
 
 # ---------------------------------------------------------------------------
 # 6. Wine 32 bits (x86 pur) : le jeu est un binaire i386
@@ -100,6 +95,26 @@ if [ ! -x /opt/wine/bin/wine ]; then
     echo "ECHEC binaire Wine 32 bits absent" >&2
     exit 3
 fi
+if [ ! -x /opt/wine/bin/wineserver ]; then
+    echo "ECHEC wineserver absent" >&2
+    exit 3
+fi
+
+# --- Elagage : l'arborescence livree contient 490 Mo, dont 136 Mo inutiles -
+#   include/    : en-tetes de developpement (69 Mo)
+#   *.a         : bibliotheques d'importation (64 Mo), seuls utiles pour
+#                 compiler des applications Windows
+#   share/man   : pages de manuel
+#   share/wine/winmd : metadonnees .NET, inutiles ici
+#   bin/*       : outils de compilation Wine (widl, wmc, wrc, winegcc...)
+# On garde share/wine/nls (icudtl.dat + .nls), share/wine/fonts, wine.inf et
+# l'integralite de lib/wine (i386-windows = DLL natives, i386-unix = modules).
+rm -rf /opt/wine/include /opt/wine/share/man /opt/wine/share/wine/winmd
+find /opt/wine -name '*.a' -delete
+for t in widl wmc wrc winegcc winemaker winebuild winedump; do
+    rm -f "/opt/wine/bin/$t"
+done
+echo "Wine elague : $(du -sh /opt/wine | cut -f1)"
 
 # ---------------------------------------------------------------------------
 # 7. Rootfs minimal : uniquement les fichiers utilises (fermeture des dependances)

@@ -62,23 +62,27 @@ if [ "$SWAT4_RENDERER" = "gpu" ] && [ -d /opt/turnip ] && [ -r /dev/kgsl-3d0 ]; 
 fi
 
 # --- Wine ------------------------------------------------------------------
-# Proton fournit un Wine 32 bits (i386) : le jeu est un binaire 32 bits et
-# Wine n'existe pas en 32 bits pour ARM64.  Box86 traduit le i386 en ARM64.
+# Wine 32 bits (x86 pur) : le jeu est un binaire 32 bits et Wine n'existe pas
+# en 32 bits pour ARM64.  Box86 traduit le i386 en ARM64.
+# Box86 emule lui-meme libc.so.6 / libdl.so.2 / libpthread.so.0 : aucune
+# glibc i386 reelle n'est necessaire (ni presente dans le rootfs).
 PROTON_DIR=/opt/wine
 export WINEPREFIX="$WINEPREFIX_DIR"
-export WINEDLLPATH="$PROTON_DIR/lib/wine/i386-windows:$PROTON_DIR/lib/wine/i386-unix"
-export LD_LIBRARY_PATH="$PROTON_DIR/lib:${LD_LIBRARY_PATH:-}"
-export PATH="$PROTON_DIR/files/bin:$PATH"
+export WINEARCH=win32
+# DLL natives (PE) : repertoire i386-windows de l'installation Wine.
+export WINEDLLPATH="$PROTON_DIR/lib/wine/i386-windows"
+# Chargeur ELF de Wine (module unix) : chemin explicite, sinon Wine le cherche
+# lui-meme via /proc/self/exe, ce qui echoue sous proot.
+export WINELOADER="$PROTON_DIR/lib/wine/i386-unix/wine-preloader"
+export PATH="$PROTON_DIR/bin:$PATH"
 
 # DXVK n'existe pas en 32 bits : wined3d (OpenGL) fait le travail, et
 # repasse par Zink/Turnip comme le moteur natif de l'UT2004.
 export WINEDLLOVERRIDES="winemenubuilder.exe=d"
-export WINEARCH=win32
-export BOX86_L2S=1
 export BOX86_DYNAREC=1
-export BOX86_NOALTL=1
-# Les i386 de la bibliotheque C sont dans /opt/box86/i386 (glibc i386).
-export LD_LIBRARY_PATH="/opt/box86/i386/lib:/opt/box86/i386/usr/lib:$LD_LIBRARY_PATH"
+# Repertoire ou Box86 cherche les bibliotheques i386 du programme invite
+# (modules unix de Wine).
+export BOX86_LD_LIBRARY_PATH="$PROTON_DIR/lib/wine/i386-unix:$PROTON_DIR/lib"
 
 # --- Journal du jeu ---------------------------------------------------------
 if [ -n "$SWAT4_LOG_DIR" ]; then
@@ -91,7 +95,7 @@ cd "$GAME_DIR/Content/System"
 
 # Box86 execute le binaire i386 de Wine ; -w force le chemin de travail.
 BOX86=${BOX86:-/opt/box86/box86}
-"$BOX86" -w "$GAME_DIR/Content/System" "$PROTON_DIR/bin/wine" Swat4.exe "$@"
-STATUS=$?
+STATUS=0
+"$BOX86" -w "$GAME_DIR/Content/System" "$PROTON_DIR/bin/wine" Swat4.exe "$@" || STATUS=$?
 
 exit $STATUS

@@ -90,7 +90,7 @@ jobs:
           body: |
             Runtime Linux du lanceur SWAT 4
             - Box86 (traduction x86 -> ARM64)
-            - Wine 32 bits 11.21 (x86) + glibc i386
+            - Wine 32 bits 11.21 (x86) ; Box86 emule libc.so.6 lui-meme
             - Mesa Turnip + Zink (OpenGL sur Adreno via Vulkan)
             - Xvfb, xbridge (entrees tactiles via XTest), ALSA -> AudioTrack
             - Paquets Debian 13 ; licences : voir packages.txt

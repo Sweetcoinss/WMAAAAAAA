@@ -77,4 +77,13 @@ copy /opt/ut
 [ -d /usr/lib/7zip ] && copy /usr/lib/7zip
 [ -d /opt/turnip ] && copy /opt/turnip/share
 
+# --- Box86 + Wine : le coeur du runtime -----------------------------------
+# Sans ces deux repertoires, le jeu ne peut pas demarrer : Box86 est
+# l'emulateur x86->ARM64 et Wine 32 bits fait tourner Swat4.exe.
+[ -x /opt/box86/box86 ] || { echo "absent: /opt/box86/box86" >&2; exit 4; }
+[ -x /opt/wine/bin/wine ] || { echo "absent: /opt/wine/bin/wine" >&2; exit 4; }
+[ -x /opt/wine/bin/wineserver ] || { echo "absent: /opt/wine/bin/wineserver" >&2; exit 4; }
+mkdir -p "$OUT/opt"
+cp -a /opt/box86 "$OUT/opt/"
+cp -a /opt/wine "$OUT/opt/"
 echo "termine : $(du -sh "$OUT" | cut -f1)"

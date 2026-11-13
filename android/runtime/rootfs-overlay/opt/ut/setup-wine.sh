@@ -14,11 +14,11 @@ WINEPREFIX="$HOME/.wine"
 
 export WINEPREFIX
 export WINEARCH=win32
-export WINEDLLPATH="$PROTON_DIR/lib/wine/i386-windows:$PROTON_DIR/lib/wine/i386-unix"
-export LD_LIBRARY_PATH="/opt/box86/i386/lib:/opt/box86/i386/usr/lib:$PROTON_DIR/files/lib:${LD_LIBRARY_PATH:-}"
-export BOX86_L2S=1
+export WINEDLLPATH="$PROTON_DIR/lib/wine/i386-windows"
+export WINELOADER="$PROTON_DIR/lib/wine/i386-unix/wine-preloader"
+export PATH="$PROTON_DIR/bin:$PATH"
 export BOX86_DYNAREC=1
-export BOX86_NOALTL=1
+export BOX86_LD_LIBRARY_PATH="$PROTON_DIR/lib/wine/i386-unix:$PROTON_DIR/lib"
 export WINEDLLOVERRIDES="winemenubuilder.exe=d"
 BOX86=${BOX86:-/opt/box86/box86}
 WINE="$PROTON_DIR/bin/wine"
