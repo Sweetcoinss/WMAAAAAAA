@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Halo orange derriere l'embleme. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <gradient
+        android:type="radial"
+        android:gradientRadius="50%p"
+        android:startColor="#26FF7A1A"
+        android:centerColor="#0DFF7A1A"
+        android:endColor="#00FF7A1A" />
+</shape>

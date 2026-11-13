@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fond de l'ecran d'accueil : degrade nuit + lueur orange discrete. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="linear"
+                android:angle="290"
+                android:startColor="#131A24"
+                android:centerColor="#0C1016"
+                android:endColor="#05070B" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="55%p"
+                android:centerX="0.75"
+                android:centerY="0.12"
+                android:startColor="#22FF7A1A"
+                android:centerColor="#08FF7A1A"
+                android:endColor="#00FF7A1A" />
+        </shape>
+    </item>
+</layer-list>

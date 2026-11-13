@@ -5,7 +5,7 @@
 -->
 <resources>
     <string name="app_name">SWAT 4</string>
-    <string name="app_subtitle">مشغّل غير رسمي — Wine 32 بت + Box86 على ARM64</string>
+    <string name="app_subtitle">منفذ العربية لأندرويد</string>
 
     <!-- Le runtime Linux est telecharge une fois, hors APK. -->
     <string name="runtime_url" translatable="false">https://github.com/Sweetcoinss/WMAAAAAAA/releases/download/runtime-v1/rootfs.tgz</string>

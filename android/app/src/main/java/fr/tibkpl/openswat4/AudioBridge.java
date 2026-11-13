@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
+import android.os.Build;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.system.OsConstants;
@@ -157,10 +158,14 @@ final class AudioBridge {
             while (running) {
                 // open() bloque jusqu'a ce que le moteur ouvre le FIFO en ecriture
                 try (FileInputStream in = new FileInputStream(fifo)) {
-                    try {
-                        Os.fcntlInt(in.getFD(), F_SETPIPE_SZ, PIPE_SIZE);
-                    } catch (ErrnoException e) {
-                        Log.w(TAG, "F_SETPIPE_SZ : " + e.getMessage());
+                    // F_SETPIPE_SZ n'existe qu'a partir de l'API 30 ; avant, la
+                    // taille du tampon est celle par defaut (64 Ko), ce qui suffit.
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        try {
+                            Os.fcntlInt(in.getFD(), F_SETPIPE_SZ, PIPE_SIZE);
+                        } catch (ErrnoException e) {
+                            Log.w(TAG, "F_SETPIPE_SZ : " + e.getMessage());
+                        }
                     }
                     // N'ecrit que des trames completes (4 octets) ; le reste attend la lecture suivante
                     int filled = 0;

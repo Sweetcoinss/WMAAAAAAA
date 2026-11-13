@@ -1,2 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"><solid android:color="#050505" /></shape>
+<!-- Fond de l'icone : degrade sombre dans le bleu nuit + halo orange. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="linear"
+                android:angle="270"
+                android:startColor="#10151C"
+                android:centerColor="#0A0D12"
+                android:endColor="#05070A" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="42%p"
+                android:startColor="#33FF7A1A"
+                android:centerColor="#0AFF7A1A"
+                android:endColor="#00FF7A1A" />
+        </shape>
+    </item>
+</layer-list>

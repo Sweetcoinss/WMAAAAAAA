@@ -7,8 +7,8 @@
         android:shortcutId="change_folder"
         android:shortcutShortLabel="@string/shortcut_change_folder">
         <intent
-            android:action="fr.tibkpl.openut2004.CHANGE_FOLDER"
-            android:targetClass="fr.tibkpl.openut2004.LauncherActivity"
-            android:targetPackage="fr.tibkpl.openut2004" />
+            android:action="fr.tibkpl.openswat4.CHANGE_FOLDER"
+            android:targetClass="fr.tibkpl.openswat4.LauncherActivity"
+            android:targetPackage="fr.tibkpl.openswat4" />
     </shortcut>
 </shortcuts>

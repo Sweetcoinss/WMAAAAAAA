@@ -46,6 +46,19 @@ android {
         jniLibs { useLegacyPackaging = true }
     }
 
+    lint {
+        // android/local.properties n'est pas versionne : son chemin Windows
+        // (sdk.dir=C\:\\...) declenche un faux positif du controle
+        // PropertyEscape, qui signale justement la forme qu'il demande.
+        disable += "PropertyEscape"
+        // L'application est disponible en arabe (langue de base), en francais
+        // et en anglais ; les autres dossiers de langue ne traduisent que les
+        // libelles du mode souris et heritent du reste.
+        disable += "MissingTranslation"
+        abortOnError = true
+        checkReleaseBuilds = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17

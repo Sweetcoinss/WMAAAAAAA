@@ -1,115 +1,160 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Ecran de demarrage simplifie : une seule action utile.
-  1. "اختر مجلد اللعبة"  -> le reste devient automatique
-  2. le jeu demarre tout seul
-  Les reglages (graphismes, langue du jeu, manette) sont dans la roue dentee.
+  Ecran de demarrage : une carte centrale sur degrade nuit.
+    1. "تحميل المحرك" (avec taille en Mo) -> barre de progression
+    2. "اختر مجلد اللعبة" une fois le moteur pret
+    3. "تشغيل اللعبة" une fois le jeu choisi
+  Les reglages sont en bas, en boutons discrets.
 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="#FF101418">
+    android:background="@drawable/bg_launcher"
+    android:fillColor="#00000000">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        android:padding="24dp">
+        android:padding="20dp">
 
-        <ImageView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_marginTop="24dp"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/art_launcher_fanart" />
+        <!-- Embleme -->
+        <FrameLayout
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:layout_marginTop="18dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/ic_launcher_foreground" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/emblem_glow" />
+        </FrameLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="10dp"
+            android:letterSpacing="0.12"
             android:text="@string/app_name"
-            android:textColor="#FFFF7A1A"
-            android:textSize="30sp"
+            android:textColor="#FFFFFFFF"
+            android:textSize="32sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="3dp"
+            android:alpha="0.6"
             android:text="@string/app_subtitle"
-            android:textColor="#FF9AA3AE"
-            android:textSize="13sp" />
+            android:textColor="#FFC8D2DC"
+            android:textSize="12sp" />
 
-        <!-- Zone d'etat : ce qu'il se passe, ou ce qu'il reste a faire -->
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="28dp"
-            android:gravity="center"
-            android:lineSpacingExtra="4dp"
-            android:textColor="#FFEEEEEE"
-            android:textSize="15sp" />
-
-        <ProgressBar
-            android:id="@+id/progress"
-            style="@android:style/Widget.Material.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:indeterminateTint="#FFFF7A1A"
-            android:max="100"
-            android:visibility="gone" />
-
-        <!-- Action principale : telecharger le moteur (une seule fois) -->
-        <Button
-            android:id="@+id/download_runtime"
+        <!-- Carte principale -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="22dp"
-            android:minHeight="56dp"
-            android:text="@string/btn_download_runtime"
-            android:textSize="16sp" />
+            android:background="@drawable/card_panel"
+            android:orientation="vertical"
+            android:padding="18dp">
 
-        <TextView
-            android:id="@+id/runtime_size"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:gravity="center"
-            android:textColor="#FF9AA3AE"
-            android:textSize="12sp" />
+            <!-- Etat -->
+            <TextView
+                android:id="@+id/status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:lineSpacingExtra="5dp"
+                android:textColor="#FFE6EDF5"
+                android:textSize="15sp" />
 
-        <!-- Action principale : choisir le dossier de la jeu -->
-        <Button
-            android:id="@+id/pick"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:minHeight="56dp"
-            android:text="@string/btn_pick"
-            android:textSize="16sp" />
+            <ProgressBar
+                android:id="@+id/progress"
+                style="@android:style/Widget.Material.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:indeterminateTint="#FFFF7A1A"
+                android:max="100"
+                android:progressTint="#FFFF7A1A"
+                android:visibility="gone" />
 
-        <!-- Lancer (apparait quand le dossier est choisi et valide) -->
-        <Button
-            android:id="@+id/play"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:minHeight="56dp"
-            android:text="@string/btn_play"
-            android:textSize="16sp"
-            android:visibility="gone" />
+            <!-- Telechargement du moteur -->
+            <Button
+                android:id="@+id/download_runtime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/btn_primary"
+                android:minHeight="54dp"
+                android:stateListAnimator="@null"
+                android:text="@string/btn_download_runtime"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/restart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/btn_restart_game"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/runtime_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"
+                android:alpha="0.65"
+                android:gravity="center"
+                android:textColor="#FFC8D2DC"
+                android:textSize="12sp" />
+
+            <!-- Choix du dossier -->
+            <Button
+                android:id="@+id/pick"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/btn_secondary"
+                android:minHeight="54dp"
+                android:stateListAnimator="@null"
+                android:text="@string/btn_pick"
+                android:textAllCaps="false"
+                android:textColor="#FFE6EDF5"
+                android:textSize="15sp" />
+
+            <Button
+                android:id="@+id/play"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/btn_primary"
+                android:minHeight="54dp"
+                android:stateListAnimator="@null"
+                android:text="@string/btn_play"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/restart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/btn_secondary"
+                android:minHeight="48dp"
+                android:stateListAnimator="@null"
+                android:text="@string/btn_restart_game"
+                android:textAllCaps="false"
+                android:textColor="#FFE6EDF5"
+                android:textSize="14sp"
+                android:visibility="gone" />
+        </LinearLayout>
 
         <Space
             android:layout_width="match_parent"
@@ -120,7 +165,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="18dp"
             android:orientation="horizontal">
 
             <Button
@@ -128,7 +173,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textSize="12sp" />
+                android:background="@drawable/btn_secondary"
+                android:minHeight="44dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:stateListAnimator="@null"
+                android:textAllCaps="false"
+                android:textColor="#FFAEBBC9"
+                android:textSize="11sp" />
 
             <Button
                 android:id="@+id/language"
@@ -136,23 +188,28 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:textSize="12sp"
+                android:background="@drawable/btn_secondary"
+                android:minHeight="44dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:stateListAnimator="@null"
+                android:textAllCaps="false"
+                android:textColor="#FFAEBBC9"
+                android:textSize="11sp"
                 android:visibility="gone" />
         </LinearLayout>
 
-        <LinearLayout
+        <Button
+            android:id="@+id/controller"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/controller"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/btn_controller"
-                android:textSize="12sp" />
-        </LinearLayout>
+            android:background="@drawable/btn_secondary"
+            android:minHeight="44dp"
+            android:stateListAnimator="@null"
+            android:text="@string/btn_controller"
+            android:textAllCaps="false"
+            android:textColor="#FFAEBBC9"
+            android:textSize="12sp" />
     </LinearLayout>
 </ScrollView>
