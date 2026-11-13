@@ -23,6 +23,37 @@ Android app (Java)            ← APK ~3 Mo : ne contient ni le jeu ni le moteur
 
 C'est tout — aucun gigaoctet n'est copié, l'APK reste très petit.
 
+## Graphics: one profile per phone
+
+The launcher detects the phone's GPU and picks the Vulkan driver that is
+actually available in the runtime, then fixes the frame rate so the game runs
+at a constant rhythm instead of fluctuating.
+
+| GPU | Kernel node | Driver in the runtime | Typical resolution |
+|---|---|---|---|
+| Qualcomm Adreno | `/dev/kgsl-3d0` | **Turnip** (freedreno) | 720p (1080p on SD845+) |
+| Arm Mali | `/dev/mali0` | **malisx2** (Mesa PanVK over `mali_kbase`) | 540p (720p on Mali-G57+) |
+| anything else | — | Mesa **llvmpipe** (software) | 540p |
+
+OpenGL reaches the GPU through **Zink** (OpenGL → Vulkan), the same stack for
+both drivers. The game itself is DirectX 8.1, served by Wine's `wined3d`
+(DXVK does not exist in 32 bits).
+
+The frame rate is capped by the engine itself: Unreal Engine 2 sleeps for the
+remaining frame budget when a frame was produced faster than
+`MinDesiredFrameRate` (`UWindowsClient::MinDesiredFrameRate`), so the launcher
+sets it to 30 instead of leaving the default of 35. The Android side then only
+uploads the picture 30 times a second instead of 60.
+
+Phones already known to work with these settings:
+
+* **Realme C25** — Helio G70, Mali-G52 2EE → malisx2, 540p.
+* **Samsung Galaxy A9 (2018)** — Snapdragon 660, Adreno 512 → Turnip, 720p.
+
+The driver can be forced in *Settings → Graphics*; the software renderer is the
+fallback if the GPU path fails (the launcher retries in software on its own
+when the game crashes at start-up).
+
 ## Touch controls
 
 The keys are the ones the game itself uses (`Content/System/User.ini`,
@@ -70,8 +101,9 @@ GitHub Actions does all of it (`ubuntu-24.04-arm` for the runtime and the
 ```
 android/app/                      Java launcher (activity, input bridge, overlay)
 android/runtime/
-  build-runtime.sh                builds the Debian rootfs: Box86, Wine, Mesa
+  build-runtime.sh                builds the Debian rootfs: Box86, Wine, Mesa, malisx2
   build-mesa.sh                   Mesa Turnip + Zink
+  prepare-proot.py                fetches proot (Termux) for jniLibs
   xbridge/xbridge.c               XTest input injection
   rootfs-overlay/opt/ut/
     run-swat4.sh                  starts Xvfb, the input bridge and the game

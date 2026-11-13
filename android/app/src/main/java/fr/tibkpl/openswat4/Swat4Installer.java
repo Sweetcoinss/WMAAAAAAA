@@ -25,6 +25,8 @@ final class Swat4Installer {
 
     private static final String TAG = "OpenSWAT4";
     private static final String KEY_RUNTIME_VERSION = "runtime_version";
+    /** Taille (en octets) du runtime installe : sert a detecter les mises a jour. */
+    private static final String KEY_RUNTIME_SIZE = "runtime_size";
     private static final String KEY_GAME_PATH = "game_path";
 
     interface Progress {
@@ -76,32 +78,58 @@ final class Swat4Installer {
     /**
      * Recupere le runtime Linux.
      *
-     * Le runtime (Box86, Wine 32 bits, Mesa Turnip, Xvfb : environ 400 Mo
-     * decompresse) n'est PAS embarque dans l'APK : il est telecharge une
+     * Le runtime (Box86, Wine 32 bits, Mesa Turnip + malisx2, Xvfb : environ
+     * 400 Mo decompresse) n'est PAS embarque dans l'APK : il est telecharge une
      * premiere fois, puis conserve dans le stockage de l'application.  L'APK
      * reste ainsi tres petit, et le jeu lui-meme n'est jamais copie.
+     *
+     * Le runtime n'est retelecharge que si la release "runtime-v1" a change
+     * (comparee via la taille du fichier distant) : une simple mise a jour de
+     * l'APK ne fait pas re-telecharger 150 Mo.
      */
     static File ensureRuntime(Context context, Progress progress) throws IOException {
         File rootfsDir = rootfsDir(context);
         SharedPreferences prefs = context.getSharedPreferences("openswat4", Context.MODE_PRIVATE);
-        int version = appVersion(context);
+        String url = context.getString(R.string.runtime_url);
         boolean missing = !new File(rootfsDir, "opt/ut/run-swat4.sh").isFile();
-        if (prefs.getInt(KEY_RUNTIME_VERSION, -1) != version || missing) {
+        long installed = prefs.getLong(KEY_RUNTIME_SIZE, -1);
+        long remote = remoteSize(url);
+        boolean outdated = remote > 0 && installed != remote;
+        if (missing || outdated) {
             progress.onStep("Telechargement du runtime Linux...");
             File tmp = new File(context.getCacheDir(), "rootfs.tgz");
-            download(context, context.getString(R.string.runtime_url), tmp, progress);
+            long size = download(context, url, tmp, progress);
             deleteRecursively(rootfsDir);
             try (InputStream in = new java.io.FileInputStream(tmp)) {
                 TarExtractor.extract(in, rootfsDir, bytes -> { });
             }
             tmp.delete();
-            prefs.edit().putInt(KEY_RUNTIME_VERSION, version).apply();
+            prefs.edit().putLong(KEY_RUNTIME_SIZE, size > 0 ? size : remote).apply();
         }
         return rootfsDir;
     }
 
+    /** Taille du fichier distant, -1 si elle est inconnue (HEAD). */
+    private static long remoteSize(String url) {
+        try {
+            java.net.HttpURLConnection conn =
+                    (java.net.HttpURLConnection) new java.net.URL(url).openConnection();
+            conn.setRequestMethod("HEAD");
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
+            try {
+                if (conn.getResponseCode() < 200 || conn.getResponseCode() >= 300) return -1;
+                return conn.getContentLengthLong();
+            } finally {
+                conn.disconnect();
+            }
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
     /** Telecharge un fichier avec avancement (le runtime : environ 400 Mo). */
-    private static void download(Context context, String url, File dest, Progress progress)
+    private static long download(Context context, String url, File dest, Progress progress)
             throws IOException {
         java.net.HttpURLConnection conn =
                 (java.net.HttpURLConnection) new java.net.URL(url).openConnection();
@@ -131,6 +159,7 @@ final class Swat4Installer {
         } finally {
             conn.disconnect();
         }
+        return total;
     }
 
     private static int appVersion(Context context) {
