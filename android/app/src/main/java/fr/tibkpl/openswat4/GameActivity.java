@@ -131,7 +131,8 @@ public class GameActivity extends Activity {
             input.setPointerBounds(width, height);
 
             runtime.framebufferFile().delete();
-            FramebufferView view = new FramebufferView(this, runtime.framebufferFile(), targetFps);
+            FramebufferView view = new FramebufferView(this, runtime.framebufferFile(), targetFps,
+                    GameData.frameGeneration(this));
             view.setOnTouchListener((v, event) -> input.onTouch(event, width, height, v.getWidth(), v.getHeight()));
             root.addView(view, 0, new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));

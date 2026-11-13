@@ -53,10 +53,11 @@
     <string name="graphics_title">Graphismes</string>
     <string name="graphics_driver">Pilote graphique</string>
     <string name="graphics_resolution">Résolution de rendu</string>
+    <string name="graphics_frame_generation">Génération d’images (interpolation)</string>
     <string name="graphics_fps">Afficher les FPS du moteur</string>
     <string name="graphics_apply">Appliquer</string>
     <string name="graphics_summary">Graphismes : %1$dp · %2$s</string>
-    <string name="graphics_help">Le pilote Vulkan est choisi automatiquement : Turnip pour les GPU Qualcomm Adreno, malisx2 pour les GPU Arm Mali. En cas d’image noire ou de plantage au démarrage, repassez en « Logiciel » (plus lent). Pour une fluidité constante, utilisez 540p sur les téléphones d’entrée de gamme : le moteur impose alors un rythme d’images fixe (MinDesiredFrameRate).</string>
+    <string name="graphics_help">Le pilote Vulkan est choisi automatiquement : Turnip pour les GPU Qualcomm Adreno, malisx2 pour les GPU Arm Mali. En cas d’image noire ou de plantage au démarrage, repassez en « Logiciel » (plus lent). Pour une fluidité constante, utilisez 540p sur les téléphones d’entrée de gamme : le moteur impose alors un rythme d’images fixe (MinDesiredFrameRate). La génération d’images interpole entre les deux dernières images du moteur : l’affichage devient plus fluide à 60 Hz, sans rien demander de plus au jeu.</string>
     <string-array name="graphics_drivers">
         <item>Automatique</item>
         <item>Vulkan · Turnip (Adreno)</item>

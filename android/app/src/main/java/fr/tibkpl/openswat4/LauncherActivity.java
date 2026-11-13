@@ -297,6 +297,10 @@ public class LauncherActivity extends Activity {
         fps.setText(R.string.graphics_fps);
         fps.setChecked(GameData.showFps(this));
         content.addView(fps);
+        CheckBox frameGen = new CheckBox(this);
+        frameGen.setText(R.string.graphics_frame_generation);
+        frameGen.setChecked(GameData.frameGeneration(this));
+        content.addView(frameGen);
         TextView help = new TextView(this);
         help.setText(R.string.graphics_help);
         help.setTextSize(12);
@@ -304,7 +308,8 @@ public class LauncherActivity extends Activity {
         new AlertDialog.Builder(this).setTitle(R.string.graphics_title).setView(content)
                 .setPositiveButton(R.string.graphics_apply, (d, which) -> {
                     GameData.saveGraphics(this, GameData.RENDER_HEIGHTS[resolution.getSelectedItemPosition()],
-                            rendererIds[driver.getSelectedItemPosition()], fps.isChecked());
+                            rendererIds[driver.getSelectedItemPosition()], fps.isChecked(),
+                            frameGen.isChecked());
                     updateResolutionButton();
                 }).setNegativeButton(android.R.string.cancel, null).show();
     }

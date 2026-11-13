@@ -27,6 +27,7 @@ final class GameData {
     private static final String KEY_LANGUAGE = "language";
     private static final String KEY_RENDERER = "renderer";
     private static final String KEY_SHOW_FPS = "show_fps";
+    private static final String KEY_FRAME_GENERATION = "frame_generation";
 
     /**
      * Langues d'UT2004 (extension des fichiers de textes) et nom affiche ; codes pris en charge
@@ -68,9 +69,20 @@ final class GameData {
 
     static String getRenderer(Context context) { return prefs(context).getString(KEY_RENDERER, "auto"); }
     static boolean showFps(Context context) { return prefs(context).getBoolean(KEY_SHOW_FPS, false); }
-    static void saveGraphics(Context context, int height, String renderer, boolean fps) {
+
+    /**
+     * Generation d'images : l'ecran interpole entre les deux dernieres images produites
+     * par le moteur, ce qui double la fluidite apparente sur un ecran 60 Hz.
+     */
+    static boolean frameGeneration(Context context) {
+        return prefs(context).getBoolean(KEY_FRAME_GENERATION, true);
+    }
+
+    static void saveGraphics(Context context, int height, String renderer, boolean fps,
+                             boolean frameGen) {
         prefs(context).edit().putInt(KEY_RENDER_HEIGHT, height).putString(KEY_RENDERER, renderer)
-                .putBoolean(KEY_SHOW_FPS, fps).putBoolean(KEY_GPU_FAILED, false).apply();
+                .putBoolean(KEY_SHOW_FPS, fps).putBoolean(KEY_FRAME_GENERATION, frameGen)
+                .putBoolean(KEY_GPU_FAILED, false).apply();
     }
 
     /**
