@@ -32,6 +32,22 @@ apt-get install -y -q --no-install-recommends \
     cmake git wget ca-certificates xz-utils python3 \
     libpng-dev libncurses-dev
 
+# ---------------------------------------------------------------------------
+# 1b. Bibliotheques C armhf : Box86 est compile en ARM 32 bits (son dynarec
+#     produit du code ARM 32 bits) ; le rootfs, lui, est arm64.  Le noyau
+#     executera donc Box86 en mode AArch32 : il lui faut la libc armhf et son
+#     chargeur.  Box86 emule ensuite lui-meme la libc i386 du jeu.
+#     libc6-dev:armhf est indispensable pour lier (Scrt1.o, crti.o, ...) :
+#     sans lui, la compilation croise echoue a l'edition de liens.
+# ---------------------------------------------------------------------------
+echo "=== libc armhf ==="
+dpkg --add-architecture armhf
+apt-get update -q
+apt-get install -y -q --no-install-recommends \
+    libc6:armhf libc6-dev:armhf libgcc-s1:armhf
+ls -l /lib/ld-linux-armhf.so.3
+ls -l /usr/lib/arm-linux-gnueabihf/crt1.o /usr/lib/arm-linux-gnueabihf/libc.so
+
 # 2. Fichiers propres au runtime (run-swat4.sh, setup-wine.sh, asound.conf) et pont XTest
 cp -r "$RUNTIME/rootfs-overlay/." /
 chmod 755 /opt/ut/run-swat4.sh /opt/ut/setup-wine.sh
@@ -82,19 +98,9 @@ echo "Box86 : $(du -h /opt/box86/box86 | cut -f1)"
 cd /tmp && rm -rf /tmp/box86
 
 # ---------------------------------------------------------------------------
-# 5. Bibliotheques C armhf : Box86 est compile en ARM 32 bits (son dynarec
-#    produit du code ARM 32 bits).  Le rootfs, lui, est arm64 : il lui faut
-#    donc la libc armhf et son chargeur, que le noyau executera en mode
-#    AArch32.  Box86 emule ensuite le programme invite i386.
-# ---------------------------------------------------------------------------
-echo "=== libc armhf ==="
-dpkg --add-architecture armhf
-apt-get update -q
-apt-get install -y -q --no-install-recommends libc6:armhf libgcc-s1:armhf
-ls -l /lib/ld-linux-armhf.so.3 /usr/lib/arm-linux-gnueabihf/libc.so.6
-
-# ---------------------------------------------------------------------------
-# 6. Wine 32 bits (x86 pur) : le jeu est un binaire i386
+# 5. Wine 32 bits (x86 pur) : le jeu est un binaire i386
+#    (Box86 emule lui-meme libc.so.6 / libdl.so.2 / libpthread.so.0 pour le
+#     programme invite : aucune glibc i386 n'est embarquee.)
 # ---------------------------------------------------------------------------
 echo "=== Wine $WINE_VERSION (x86) ==="
 mkdir -p /opt/wine && cd /tmp
