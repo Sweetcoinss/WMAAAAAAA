@@ -25,7 +25,7 @@ apt-get install -y -q --no-install-recommends \
     libstdc++6 libatomic1 libgl1 libglx0 libopengl0 libgl1-mesa-dri libglx-mesa0 libegl1 \
     libvulkan1 libasound2t64 libx11-6 libxext6 libxcursor1 libxi6 libxfixes3 libxrandr2 \
     libxss1 libxtst6 xvfb x11-xkb-utils xkb-data 7zip unshield mawk \
-    gcc g++ make libc6-dev libx11-dev libxtst-dev libsdl3-dev pkg-config \
+    gcc g++ make binutils libc6-dev libx11-dev libxtst-dev libsdl3-dev pkg-config \
     cmake git wget ca-certificates xz-utils python3 \
     libpng-dev libncurses-dev
 
@@ -53,14 +53,30 @@ cd /tmp/box86
 git clone --depth 1 --branch "$BOX86_VERSION" https://github.com/ptitSeb/box86.git src \
     || git clone --depth 1 https://github.com/ptitSeb/box86.git src
 cd src
+# Box86 v0.3.8 : les branches "aarch64" de son CMakeLists ajoutent des options
+# reservees a ARM 32 bits (-mfpu, -mfloat-abi, -marm) que le compilateur aarch64
+# refuse ("unrecognized command-line option"), et le bloc de detection cherche
+# un compilateur 32 bits.  On retire ces options ; la recompilation dynamique
+# (ARM_DYNAREC), qui assure la vitesse, reste activee.
+sed -i -e 's/ -mfpu=[a-zA-Z0-9.+-]*//g' \
+       -e 's/ -mfloat-abi=hard//g' \
+       -e 's/^add_definitions(-marm)$//' \
+       CMakeLists.txt
 mkdir -p build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DARM64=ON -DLD80BITS=0 .. >/dev/null
+cmake -DCMAKE_BUILD_TYPE=Release -DARM64=ON -DARM_DYNAREC=ON -DLD80BITS=0 .. >/dev/null
 make -j"$(nproc)" >/dev/null
 install -m 755 box86 /opt/box86/box86
 # La version standard de Box86 est un executable autonome (la variante BOX86LIB
 # qui produit libbox86.so n'est pas utilisee) : rien d'autre a installer.
 if [ ! -x /opt/box86/box86 ]; then
     echo "ECHEC binaire Box86 absent" >&2
+    exit 3
+fi
+# Verification de l'architecture : on ne veut surtout pas un binaire i386
+# (le compilateur 32 bits est cherche par le CMakeLists de Box86).
+if ! readelf -h /opt/box86/box86 2>/dev/null | grep -q 'AArch64'; then
+    echo "ECHEC Box86 n'est pas un binaire AArch64" >&2
+    readelf -h /opt/box86/box86 >&2 || true
     exit 3
 fi
 echo "Box86 : $(du -h /opt/box86/box86 | cut -f1)"
