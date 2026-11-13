@@ -22,6 +22,37 @@ android {
         ndk { abiFilters += "arm64-v8a" }
     }
 
+    // -------------------------------------------------------------------------
+    // Editions :
+    //   free  : edition limitee (resolution plafonnee, pas de jeu en reseau) --
+    //           installee a cote de la version complete, elle cohabite car son
+    //           applicationId est different.
+    //   full  : edition complete (toutes les options, y compris le multijoueur
+    //           local et la resolution native).
+    // -------------------------------------------------------------------------
+    flavorDimensions += "edition"
+    productFlavors {
+        create("full") {
+            dimension = "edition"
+            versionNameSuffix = "-full"
+            buildConfigField("boolean", "EDITION_FREE", "false")
+            buildConfigField("int", "MAX_RENDER_HEIGHT", "1080")
+            buildConfigField("boolean", "EDITION_NETWORK", "true")
+        }
+        create("free") {
+            dimension = "edition"
+            applicationIdSuffix = ".free"
+            versionNameSuffix = "-free"
+            buildConfigField("boolean", "EDITION_FREE", "true")
+            buildConfigField("int", "MAX_RENDER_HEIGHT", "720")
+            buildConfigField("boolean", "EDITION_NETWORK", "false")
+        }
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
     // Signature de l'APK release : cle fournie par variables d'environnement (secrets GitHub,
     // voir README) ; a defaut, cle de debug.
     val keystore = System.getenv("OPENSWAT4_KEYSTORE")

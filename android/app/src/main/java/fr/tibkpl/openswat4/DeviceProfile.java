@@ -63,23 +63,33 @@ final class DeviceProfile {
         boolean mali = new File("/dev/mali0").exists();
         String soc = socName();
 
+        DeviceProfile p;
         if (adreno && new File(rootfs, "opt/turnip/lib").isDirectory()) {
-            return new DeviceProfile(RENDERER_TURNIP, adrenoHeight(soc), 30, "Qualcomm Adreno (" + soc + ")");
-        }
-        if (mali && new File(rootfs, "opt/mali/libvulkan_malisx2.so").isFile()) {
-            return new DeviceProfile(RENDERER_MALI, maliHeight(soc), 30, "Arm Mali (" + soc + ")");
-        }
-        if (adreno) {
+            p = new DeviceProfile(RENDERER_TURNIP, adrenoHeight(soc), 30, "Qualcomm Adreno (" + soc + ")");
+        } else if (mali && new File(rootfs, "opt/mali/libvulkan_malisx2.so").isFile()) {
+            p = new DeviceProfile(RENDERER_MALI, maliHeight(soc), 30, "Arm Mali (" + soc + ")");
+        } else if (adreno) {
             // GPU Adreno mais pilote absent du runtime : on peut encore utiliser
             // le rendu logiciel, ou le pilote Mesa livre avec le runtime.
             Log.w(TAG, "GPU Adreno detecte mais Turnip absent du runtime");
-            return new DeviceProfile(RENDERER_SOFTWARE, 540, 30, "Adreno (logiciel)");
-        }
-        if (mali) {
+            p = new DeviceProfile(RENDERER_SOFTWARE, 540, 30, "Adreno (logiciel)");
+        } else if (mali) {
             Log.w(TAG, "GPU Mali detecte mais malisx2 absent du runtime");
-            return new DeviceProfile(RENDERER_SOFTWARE, 540, 30, "Mali (logiciel)");
+            p = new DeviceProfile(RENDERER_SOFTWARE, 540, 30, "Mali (logiciel)");
+        } else {
+            p = new DeviceProfile(RENDERER_SOFTWARE, 540, 30, "logiciel (" + soc + ")");
         }
-        return new DeviceProfile(RENDERER_SOFTWARE, 540, 30, "logiciel (" + soc + ")");
+        return p.cap(Edition.maxRenderHeight());
+    }
+
+    /**
+     * Plafonne la hauteur de rendu (edition gratuite : 720 pixels maximum).
+     * Le debit d'images cible est conserve : on prefere une image un peu moins
+     * grande mais toujours fluide.
+     */
+    private DeviceProfile cap(int maxHeight) {
+        if (renderHeight <= maxHeight) return this;
+        return new DeviceProfile(renderer, maxHeight, targetFps, gpuName);
     }
 
     /**

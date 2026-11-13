@@ -1,9 +1,13 @@
 # SWAT 4 for Android — إعداد جهاز آخر
 
+## 0. المستودع
+المشروع على: `https://github.com/Sweetcoinss/WMAAAAAAA` (خاص).
+نسخة العمل السابقة: `https://github.com/Sweetcoinss/swat4-android`.
+
 ## 1. النسخ (clone)
 ```sh
-git clone https://github.com/Sweetcoinss/swat4-android.git
-cd swat4-android
+git clone https://github.com/Sweetcoinss/WMAAAAAAA.git
+cd WMAAAAAAA
 ```
 
 ## 2. المتطلبات على الجهاز الجديد
@@ -35,10 +39,12 @@ docker run --rm --platform linux/arm64 -v "$PWD:/src" debian:trixie \
 
 # 2. إنشاء APK
 cd android
-.\gradlew.bat assembleDebug     # Windows
-./gradlew assembleDebug         # Linux/macOS
+.\gradlew.bat assembleFullDebug assembleFreeDebug     # Windows
+./gradlew assembleFullDebug assembleFreeDebug         # Linux/macOS
 ```
-الـ APK يتكوّن في: `app/build/outputs/apk/debug/app-debug.apk`
+الـ APK تتكوّن في:
+- `app/build/outputs/apk/debug/app-full-debug.apk` (النسخة الرئيسية)
+- `app/build/outputs/apk/debug/app-free-debug.apk` (النسخة المجانية)
 
 ## 4. على الهاتف
 1. ثبّت `app-debug.apk`
@@ -58,6 +64,14 @@ cd android
 - `jniLibs/libproot*.so` — بتتولد بواسطة `prepare-proot.py` في الـ CI
 
 ## 7. الـ APK لا يحتوي على اللعبة إطلاقاً
-- الـ APK ~3 MB
+- الـ APK ~3 MB لكل نسخة (رئيسية ومجانية)
 - الـ runtime ~120 MB — ينزّل أول مرة ويُحفظ على الجهاز
 - اللعبة تُشغّل من مكانها (SD/ذاكرة) بدون نسخ
+
+## 8. الفرق بين النسختين
+| | `full` (رئيسية) | `free` (مجانية) |
+|---|---|---|
+| Identifiant | `fr.tibkpl.openswat4` | `fr.tibkpl.openswat4.free` |
+| دقة العرض القصوى | 1080p | 720p |
+| لعب جماعي عبر الشبكة المحلية | نعم | لا |
+| التثبيت المتزامن | تنفعان معاً (نفسان بمعرّفين مختلفين) | |

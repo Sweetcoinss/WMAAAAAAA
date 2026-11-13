@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Unreal Tournament 2004"
+rootProject.name = "SWAT4 Android"
 include(":app")
