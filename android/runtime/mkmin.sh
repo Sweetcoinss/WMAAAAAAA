@@ -89,4 +89,10 @@ cp -a /opt/wine "$OUT/opt/"
 # Pilote Vulkan pour les GPU Arm Mali (malisx2) : optionnel, absent sur les
 # telephones Qualcomm.
 [ -d /opt/mali ] && cp -a /opt/mali "$OUT/opt/"
+
+# Certains binaires Wine cherchent leur chargeur a un chemin fige a la
+# compilation (/usr/lib/wine/wine-preloader) : on y met un lien vers notre
+# arborescence, en plus de la variable WINELOADER.
+mkdir -p "$OUT/usr/lib"
+ln -sfn /opt/wine/lib/wine "$OUT/usr/lib/wine"
 echo "termine : $(du -sh "$OUT" | cut -f1)"
