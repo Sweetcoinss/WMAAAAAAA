@@ -120,13 +120,14 @@ public class GameActivity extends Activity {
             // interne et debit d'images cible.  La resolution choisie par
             // l'utilisateur prime ; sinon on prend celle du profil.
             DeviceProfile profile = DeviceProfile.detect(this, config.rootfsDir);
-            int targetFps = profile.targetFps;
+            final int targetFps = profile.targetFps;
             Point screen = screenSize();
             // Hauteur de rendu choisie (largeur au format de l'ecran, donc 16:9 sur un ecran
             // 16:9) ; l'image est ensuite agrandie a la taille de l'ecran.
-            int height = Math.min(GameData.getRenderHeight(this), screen.y);
-            if (height <= 0) height = Math.min(profile.renderHeight, screen.y);
-            int width = Math.round(height * (float) screen.x / screen.y) & ~1;
+            int chosen = Math.min(GameData.getRenderHeight(this), screen.y);
+            if (chosen <= 0) chosen = Math.min(profile.renderHeight, screen.y);
+            final int height = chosen;
+            final int width = Math.round(height * (float) screen.x / screen.y) & ~1;
             input.setPointerBounds(width, height);
 
             runtime.framebufferFile().delete();
