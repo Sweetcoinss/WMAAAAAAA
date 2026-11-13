@@ -63,12 +63,31 @@
             android:max="100"
             android:visibility="gone" />
 
+        <!-- Action principale : telecharger le moteur (une seule fois) -->
+        <Button
+            android:id="@+id/download_runtime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:minHeight="56dp"
+            android:text="@string/btn_download_runtime"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/runtime_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:textColor="#FF9AA3AE"
+            android:textSize="12sp" />
+
         <!-- Action principale : choisir le dossier de la jeu -->
         <Button
             android:id="@+id/pick"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="14dp"
             android:minHeight="56dp"
             android:text="@string/btn_pick"
             android:textSize="16sp" />

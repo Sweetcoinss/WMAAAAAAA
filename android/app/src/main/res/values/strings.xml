@@ -27,7 +27,11 @@
     <string name="status_preparing">جاري التحضير…</string>
     <string name="status_runtime_failed">تعذّر تجهيز المحرك: %1$s</string>
     <string name="status_detected">تم العثور على اللعبة\n%1$s</string>
-    <string name="status_found">اللعبة موجودة:\n%1$s</string>
+    <string name="btn_download_runtime">تحميل المحرك</string>
+    <string name="runtime_size">الحجم: %1$d ميغا</string>
+    <string name="status_runtime_missing">المحرك غير مثبت. حمّله أولا (مرة واحدة فقط)</string>
+    <string name="status_downloading_runtime">جارٍ تحميل المحرك…</string>
+    <string name="status_runtime_ready">تم تحميل المحرك. الآن اختر مجلد اللعب.</string>    <string name="status_found">اللعبة موجودة:\n%1$s</string>
     <string name="status_installed">تم التثبيت:\n%1$s</string>
     <string name="status_saved_missing">اللعبة لم تعد موجودة في:\n%1$s\n\nاختر مجلدها من جديد.</string>
     <string name="status_pick_invalid">هذا المجلد لا يحتوي على SWAT 4:\n%1$s\n\nالعناصر الناقصة: %2$s</string>

@@ -17,6 +17,11 @@
     <string name="status_preparing">Préparation…</string>
     <string name="status_runtime_failed">Impossible de préparer le runtime : %1$s</string>
     <string name="status_found">Jeu trouvé :\n%1$s</string>
+    <string name="btn_download_runtime">Télécharger le moteur</string>
+    <string name="runtime_size">Taille : %1$d Mo</string>
+    <string name="status_runtime_missing">Le moteur n\'est pas installé. Téléchargez-le d\'abord (une seule fois).</string>
+    <string name="status_downloading_runtime">Téléchargement du moteur…</string>
+    <string name="status_runtime_ready">Moteur téléchargé. Choisissez maintenant le dossier du jeu.</string>
     <string name="status_detected">Jeu détecté automatiquement :\n%1$s</string>
     <string name="status_installed">Installation terminée :\n%1$s</string>
     <string name="status_saved_missing">Le jeu n\'est plus présent dans :\n%1$s\n\nChoisissez à nouveau son dossier.</string>

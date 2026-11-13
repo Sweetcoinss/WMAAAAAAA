@@ -111,6 +111,21 @@ final class Swat4Installer {
         return rootfsDir;
     }
 
+    /** Vrai si le runtime est deja installe (et a jour) : pas de telechargement a faire. */
+    static boolean runtimeInstalled(Context context) {
+        File rootfsDir = rootfsDir(context);
+        if (!new File(rootfsDir, "opt/ut/run-swat4.sh").isFile()) return false;
+        SharedPreferences prefs = context.getSharedPreferences("openswat4", Context.MODE_PRIVATE);
+        long installed = prefs.getLong(KEY_RUNTIME_SIZE, -1);
+        long remote = remoteSize(context.getString(R.string.runtime_url));
+        return remote <= 0 || installed == remote;
+    }
+
+    /** Taille du runtime distant en octets, -1 si inconnue. */
+    static long runtimeRemoteSize(Context context) {
+        return remoteSize(context.getString(R.string.runtime_url));
+    }
+
     /** Taille du fichier distant, -1 si elle est inconnue (HEAD). */
     private static long remoteSize(String url) {
         try {
@@ -130,7 +145,7 @@ final class Swat4Installer {
         }
     }
 
-    /** Telecharge un fichier avec avancement (le runtime : environ 400 Mo). */
+    /** Telecharge un fichier avec avancement (le runtime : environ 190 Mo). */
     private static long download(Context context, String url, File dest, Progress progress)
             throws IOException {
         java.net.HttpURLConnection conn =
@@ -152,10 +167,13 @@ final class Swat4Installer {
             while ((n = in.read(buf)) > 0) {
                 out.write(buf, 0, n);
                 done += n;
-                if (total > 0 && done - lastReport > total / 50) {
+                long step = total > 0 ? Math.max(total / 100, 512 * 1024) : 2L * 1024 * 1024;
+                if (done - lastReport > step) {
                     lastReport = done;
                     progress.onStep(String.format(java.util.Locale.US,
-                            "Runtime Linux : %d%%", done * 100 / total));
+                            "Runtime Linux : %d / %d Mo (%d%%)",
+                            done / 1048576, total / 1048576,
+                            total > 0 ? (int) (done * 100 / total) : 0));
                 }
             }
         } finally {

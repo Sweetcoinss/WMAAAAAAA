@@ -17,6 +17,11 @@
     <string name="status_preparing">Preparing…</string>
     <string name="status_runtime_failed">Could not prepare the runtime: %1$s</string>
     <string name="status_found">Game found:\n%1$s</string>
+    <string name="btn_download_runtime">Download the engine</string>
+    <string name="runtime_size">Size: %1$d MB</string>
+    <string name="status_runtime_missing">The engine is not installed yet. Download it first (one time only).</string>
+    <string name="status_downloading_runtime">Downloading the engine…</string>
+    <string name="status_runtime_ready">Engine downloaded. Now pick the game folder.</string>
     <string name="status_detected">Game detected automatically:\n%1$s</string>
     <string name="status_installed">Install finished:\n%1$s</string>
     <string name="status_saved_missing">The game is no longer in:\n%1$s\n\nPick its folder again.</string>

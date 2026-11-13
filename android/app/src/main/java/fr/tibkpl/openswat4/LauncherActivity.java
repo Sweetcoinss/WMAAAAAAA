@@ -51,9 +51,11 @@ public class LauncherActivity extends Activity {
     private static final int REQ_PERMISSION = 3;
 
     private TextView status;
+    private TextView runtimeSize;
     private ProgressBar progress;
     private Button playButton;
     private Button restartButton;
+    private Button downloadButton;
     private Button pickButton;
     private Button resolutionButton;
     private Button languageButton;
@@ -83,14 +85,17 @@ public class LauncherActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launcher);
         status = findViewById(R.id.status);
+        runtimeSize = findViewById(R.id.runtime_size);
         progress = findViewById(R.id.progress);
         playButton = findViewById(R.id.play);
         restartButton = findViewById(R.id.restart);
+        downloadButton = findViewById(R.id.download_runtime);
         pickButton = findViewById(R.id.pick);
         resolutionButton = findViewById(R.id.resolution);
         languageButton = findViewById(R.id.language);
 
         restartButton.setOnClickListener(v -> { setResult(Activity.RESULT_FIRST_USER); finish(); });
+        downloadButton.setOnClickListener(v -> downloadRuntime());
         pickButton.setOnClickListener(v -> {
             if (!hasStorageAccess()) requestStorageAccess();
             else openPicker(REQ_PICK_GAME);
@@ -145,6 +150,8 @@ public class LauncherActivity extends Activity {
         progress.setVisibility(View.GONE);
         playButton.setVisibility(View.GONE);
         restartButton.setVisibility(View.GONE);
+        downloadButton.setVisibility(View.GONE);
+        runtimeSize.setVisibility(View.GONE);
         pickButton.setVisibility(View.VISIBLE);
         pickButton.setEnabled(true);
         pickButton.setText(R.string.btn_pick);
@@ -155,10 +162,21 @@ public class LauncherActivity extends Activity {
         }
 
         if (gameDir == null) {
-            // Pas encore de jeu : une seule action a faire.
-            status.setText(hasStorageAccess()
-                    ? R.string.status_choose_folder
-                    : R.string.status_need_permission);
+            // Pas encore de jeu : il faut d'abord le moteur, puis le dossier.
+            if (!Swat4Installer.runtimeInstalled(this)) {
+                downloadButton.setVisibility(View.VISIBLE);
+                downloadButton.setEnabled(true);
+                downloadButton.setText(R.string.btn_download_runtime);
+                status.setText(R.string.status_runtime_missing);
+                long size = Swat4Installer.runtimeRemoteSize(this);
+                runtimeSize.setVisibility(size > 0 ? View.VISIBLE : View.GONE);
+                if (size > 0) {
+                    runtimeSize.setText(getString(R.string.runtime_size, size / 1048576));
+                }
+                return;
+            }
+            // Moteur pret : on demande le dossier de la jeu.
+            status.setText(R.string.status_choose_folder);
             return;
         }
 
@@ -175,6 +193,52 @@ public class LauncherActivity extends Activity {
             restartButton.setVisibility(View.VISIBLE);
         }
         updateLanguageButton(found);
+    }
+
+    // ------------------------------------------------------------------
+    // Telechargement du moteur (runtime Linux)
+    // ------------------------------------------------------------------
+
+    /**
+     * Telecharge le moteur Linux (Box86 + Wine 32 bits + Mesa).  La barre de
+     * progression montre ce qui est deja telecharge, en Mo.  Apres le
+     * telechargement, l'ecran passe a « choisis le dossier de la jeu ».
+     */
+    private void downloadRuntime() {
+        if (preparing) return;
+        preparing = true;
+        downloadButton.setEnabled(false);
+        downloadButton.setVisibility(View.GONE);
+        runtimeSize.setVisibility(View.GONE);
+        progress.setVisibility(View.VISIBLE);
+        progress.setIndeterminate(true);
+        status.setText(R.string.status_downloading_runtime);
+
+        new Thread(() -> {
+            String error = null;
+            try {
+                Swat4Installer.ensureRuntime(this, (step) -> runOnUiThread(() -> {
+                    status.setText(step);
+                    progress.setIndeterminate(true);
+                }));
+            } catch (Exception e) {
+                error = e.getMessage();
+                Log.w(TAG, "telechargement du runtime impossible", e);
+            }
+            final String failure = error;
+            runOnUiThread(() -> {
+                preparing = false;
+                progress.setVisibility(View.GONE);
+                if (failure != null) {
+                    status.setText(getString(R.string.status_runtime_failed, failure));
+                    downloadButton.setVisibility(View.VISIBLE);
+                    downloadButton.setEnabled(true);
+                    return;
+                }
+                status.setText(R.string.status_runtime_ready);
+                refresh();
+            });
+        }).start();
     }
 
     // ------------------------------------------------------------------
