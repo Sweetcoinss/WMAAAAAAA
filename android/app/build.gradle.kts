@@ -11,12 +11,12 @@ plugins {
 
 android {
     namespace = "fr.tibkpl.openswat4"
-    compileSdk = 36
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "fr.tibkpl.openswat4"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 34
         versionCode = (System.getenv("OPENSWAT4_VERSION_CODE") ?: "1").toInt()
         versionName = System.getenv("OPENSWAT4_VERSION_NAME") ?: "0.1"
         ndk { abiFilters += "arm64-v8a" }

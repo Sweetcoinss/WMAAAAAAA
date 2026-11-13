@@ -92,6 +92,22 @@ public class ShellActivity extends android.app.Activity {
         diagButton.setOnClickListener(v -> runDiagnostics());
         clearButton.setOnClickListener(v -> clear());
 
+        rootBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                new Thread(() -> {
+                    boolean ok = hasRoot();
+                    handler.post(() -> {
+                        if (!ok) {
+                            rootBox.setChecked(false);
+                            toast("صلاحية Root غير متاحة أو تم رفضها");
+                        } else {
+                            toast("تم تفعيل صلاحية Root بنجاح");
+                        }
+                    });
+                }, "root-check").start();
+            }
+        });
+
         input.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, history));
         // Les fleches haut/bas parcourent l'historique, comme dans un terminal.
         input.setOnKeyListener((v, keyCode, event) -> {
@@ -121,9 +137,9 @@ public class ShellActivity extends android.app.Activity {
         }
 
         append("== Terminal SWAT 4 ==\n");
-        append("اكتب أمراً ثم «تنفيذ». afterwards «نسخ» أو «إرسال» للنتيجة.\n".replace("afterwards ", "ثم "));
-        append("root: " + (hasRoot() ? "متاح ✓" : "غير متاح") + "\n");
-        append("قائمة الأوامر السابقة:Fleches haut/bas\n\n");
+        append("اكتب أمراً ثم «تنفيذ» ثم «نسخ» أو «إرسال» للنتيجة.\n");
+        append("root: اختياري (حدد المربع إذا أردت تشغيل كـ root)\n");
+        append("قائمة الأوامر السابقة: استخدم الأسهم للتنقل\n\n");
     }
 
     // ------------------------------------------------------------------

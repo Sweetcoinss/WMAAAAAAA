@@ -8,12 +8,12 @@ plugins {
 // reste utilisable pour comprendre pourquoi.
 android {
     namespace = "fr.tibkpl.shell"
-    compileSdk = 36
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "fr.tibkpl.shell"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 34
         versionCode = (System.getenv("SHELL_VERSION_CODE") ?: "1").toInt()
         versionName = System.getenv("SHELL_VERSION_NAME") ?: "1.0"
     }
