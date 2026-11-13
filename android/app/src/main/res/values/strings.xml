@@ -16,7 +16,6 @@
     <string name="btn_pick">اختر مجلد اللعبة</string>
     <string name="btn_grant">السماح بالوصول للملفات</string>
     <string name="btn_language">لغة اللعبة: %1$s</string>
-    <string name="btn_download_game">تحميل اللعبة (≈ ٣ غيغا)</string>
     <string name="btn_return_game">العودة إلى اللعبة</string>
     <string name="btn_restart_game">إعادة تشغيل اللعبة</string>
     <string name="btn_controller">إعدادات التحكم</string>
@@ -27,6 +26,7 @@
     <string name="status_need_permission">يحتاج التطبيق إذن الوصول للملفات ليقرأ مجلد اللعبة.\n\nاضغط «اختر مجلد اللعبة» وسيمتحنك النظام.</string>
     <string name="status_preparing">جاري التحضير…</string>
     <string name="status_runtime_failed">تعذّر تجهيز المحرك: %1$s</string>
+    <string name="status_detected">تم العثور على اللعبة\n%1$s</string>
     <string name="status_found">اللعبة موجودة:\n%1$s</string>
     <string name="status_installed">تم التثبيت:\n%1$s</string>
     <string name="status_saved_missing">اللعبة لم تعد موجودة في:\n%1$s\n\nاختر مجلدها من جديد.</string>

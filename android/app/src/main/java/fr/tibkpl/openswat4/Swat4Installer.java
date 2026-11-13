@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Installation de SWAT 4 pour le lanceur Android.
@@ -186,10 +188,60 @@ final class Swat4Installer {
     static File verifyGame(File source) throws IOException {
         File content = new File(source, "Content").isDirectory() ? new File(source, "Content") : source;
         if (!new File(content, "System/Swat4.exe").isFile()) {
+            // L'utilisateur a peut-etre choisi le dossier System lui-meme.
+            if (new File(content, "Swat4.exe").isFile()) {
+                return content.getParentFile().getParentFile();   // racine du jeu
+            }
             throw new IOException(source.getAbsolutePath()
                     + " : Swat4.exe introuvable (dossier attendu : Content/System/Swat4.exe)");
         }
         return content.getParentFile();   // la racine du jeu (contient Content/)
+    }
+
+    /**
+     * Recherche une installation de SWAT 4 dans le dossier donne : la racine du
+     * jeu (qui contient Content/), le dossier Content, ou le dossier
+     * Content/System.  Renvoie null si rien n'est trouve.
+     */
+    static File findSwat4(File dir) {
+        if (dir == null || !dir.isDirectory()) return null;
+        if (new File(dir, "Content/System/Swat4.exe").isFile()) return dir;
+        File content = new File(dir, "Content");
+        if (new File(content, "System/Swat4.exe").isFile()) return dir;
+        File system = new File(content, "System");
+        if (new File(system, "Swat4.exe").isFile()) return dir.getParentFile();
+        return null;
+    }
+
+    /**
+     * Cherche SWAT 4 dans les emplacements habituels du telephone (carte SD,
+     * dossier de stockage interne, dossier "Jeux").  Renvoie la racine du jeu
+     * trouvee, ou null.
+     */
+    static File detectGame() {
+        File external = android.os.Environment.getExternalStorageDirectory();
+        if (external == null) return null;
+        List<File> roots = new ArrayList<>();
+        roots.add(external);
+        File[] children = external.listFiles();
+        if (children != null) {
+            for (File child : children) {
+                if (child.isDirectory() && !child.getName().equals("Android")) roots.add(child);
+            }
+        }
+        for (File root : roots) {
+            File found = findSwat4(root);
+            if (found != null) return found;
+            // Un niveau plus bas : /sdcard/Jeux/SWAT 4 ...
+            File[] sub = root.listFiles();
+            if (sub == null) continue;
+            for (File child : sub) {
+                if (!child.isDirectory()) continue;
+                File deep = findSwat4(child);
+                if (deep != null) return deep;
+            }
+        }
+        return null;
     }
 
     /** Racine du jeu choisi (dossier contenant Content/), ou null. */

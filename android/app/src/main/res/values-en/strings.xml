@@ -7,7 +7,6 @@
     <string name="btn_pick">Choose the game folder</string>
     <string name="btn_grant">Allow file access</string>
     <string name="btn_language">Game language: %1$s</string>
-    <string name="btn_download_game">Download the game (≈ 3 GB)</string>
     <string name="btn_return_game">Back to the game</string>
     <string name="btn_restart_game">Restart the game</string>
     <string name="btn_controller">Controller settings</string>
@@ -18,6 +17,7 @@
     <string name="status_preparing">Preparing…</string>
     <string name="status_runtime_failed">Could not prepare the runtime: %1$s</string>
     <string name="status_found">Game found:\n%1$s</string>
+    <string name="status_detected">Game detected automatically:\n%1$s</string>
     <string name="status_installed">Install finished:\n%1$s</string>
     <string name="status_saved_missing">The game is no longer in:\n%1$s\n\nPick its folder again.</string>
     <string name="status_pick_invalid">This folder does not contain SWAT 4:\n%1$s\n\nMissing items: %2$s</string>

@@ -7,7 +7,6 @@
     <string name="btn_pick">Choisir le dossier du jeu</string>
     <string name="btn_grant">Autoriser l\'accès aux fichiers</string>
     <string name="btn_language">Langue du jeu : %1$s</string>
-    <string name="btn_download_game">Télécharger le jeu (≈ 3 Go)</string>
     <string name="btn_return_game">Retour au jeu</string>
     <string name="btn_restart_game">Redémarrer le jeu</string>
     <string name="btn_controller">Configurer la manette</string>
@@ -18,6 +17,7 @@
     <string name="status_preparing">Préparation…</string>
     <string name="status_runtime_failed">Impossible de préparer le runtime : %1$s</string>
     <string name="status_found">Jeu trouvé :\n%1$s</string>
+    <string name="status_detected">Jeu détecté automatiquement :\n%1$s</string>
     <string name="status_installed">Installation terminée :\n%1$s</string>
     <string name="status_saved_missing">Le jeu n\'est plus présent dans :\n%1$s\n\nChoisissez à nouveau son dossier.</string>
     <string name="status_pick_invalid">Ce dossier ne contient pas SWAT 4 :\n%1$s\n\nÉléments manquants : %2$s</string>

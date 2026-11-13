@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.StatFs;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -49,14 +48,12 @@ public class LauncherActivity extends Activity {
     static final String EXTRA_RETURN_TO_GAME = "return_to_game";
 
     private static final int REQ_PICK_GAME = 1;
-    private static final int REQ_PICK_DOWNLOAD = 2;
     private static final int REQ_PERMISSION = 3;
 
     private TextView status;
     private ProgressBar progress;
     private Button playButton;
     private Button restartButton;
-    private Button downloadButton;
     private Button pickButton;
     private Button resolutionButton;
     private Button languageButton;
@@ -65,6 +62,8 @@ public class LauncherActivity extends Activity {
     /** Vrai quand on vient du raccourci "Changer le dossier" : pas de lancement auto. */
     private boolean forcePick;
     private String pickError;
+    /** La detection automatique n'a lieu qu'une fois par session. */
+    private boolean detectionDone;
 
     /** Preparation automatique en cours (runtime / prefixe Wine). */
     private boolean preparing;
@@ -87,13 +86,11 @@ public class LauncherActivity extends Activity {
         progress = findViewById(R.id.progress);
         playButton = findViewById(R.id.play);
         restartButton = findViewById(R.id.restart);
-        downloadButton = findViewById(R.id.download);
         pickButton = findViewById(R.id.pick);
         resolutionButton = findViewById(R.id.resolution);
         languageButton = findViewById(R.id.language);
 
         restartButton.setOnClickListener(v -> { setResult(Activity.RESULT_FIRST_USER); finish(); });
-        downloadButton.setOnClickListener(v -> confirmDownload());
         pickButton.setOnClickListener(v -> {
             if (!hasStorageAccess()) requestStorageAccess();
             else openPicker(REQ_PICK_GAME);
@@ -133,10 +130,21 @@ public class LauncherActivity extends Activity {
         File gameDir = Swat4Installer.gameRoot(this);
         boolean returnToGame = getIntent().getBooleanExtra(EXTRA_RETURN_TO_GAME, false);
 
+        // Detection automatique : le jeu est souvent deja sur le telephone, on
+        // le cherche pour eviter d'avoir a parcourir l'arborescence a la main.
+        if (gameDir == null && !forcePick && !detectionDone) {
+            detectionDone = true;
+            gameDir = Swat4Installer.detectGame();
+            if (gameDir != null) {
+                Swat4Installer.rememberGameDir(this, gameDir);
+                status.setText(getString(R.string.status_detected, gameDir.getAbsolutePath()));
+                return;
+            }
+        }
+
         progress.setVisibility(View.GONE);
         playButton.setVisibility(View.GONE);
         restartButton.setVisibility(View.GONE);
-        downloadButton.setVisibility(View.VISIBLE);
         pickButton.setVisibility(View.VISIBLE);
         pickButton.setEnabled(true);
         pickButton.setText(R.string.btn_pick);
@@ -155,17 +163,18 @@ public class LauncherActivity extends Activity {
         }
 
         // Le jeu est la : on propose de jouer directement.
-        status.setText(getString(R.string.status_found, gameDir.getAbsolutePath()));
+        final File found = gameDir;
+        status.setText(getString(R.string.status_found, found.getAbsolutePath()));
         playButton.setVisibility(View.VISIBLE);
         playButton.setText(returnToGame ? R.string.btn_return_game : R.string.btn_play);
         playButton.setOnClickListener(v -> {
             if (returnToGame) finish();
-            else launchGame(gameDir);
+            else launchGame(found);
         });
         if (returnToGame) {
             restartButton.setVisibility(View.VISIBLE);
         }
-        updateLanguageButton(gameDir);
+        updateLanguageButton(found);
     }
 
     // ------------------------------------------------------------------
@@ -219,16 +228,6 @@ public class LauncherActivity extends Activity {
     // Choix du dossier
     // ------------------------------------------------------------------
 
-    /** Option secondaire : telecharger la jeu pour ceux qui ne l'ont pas. */
-    private void confirmDownload() {
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.download_confirm_title)
-                .setMessage(R.string.download_confirm_text)
-                .setPositiveButton(R.string.download_confirm_ok, (d, w) -> openPicker(REQ_PICK_DOWNLOAD))
-                .setNegativeButton(android.R.string.cancel, null)
-                .show();
-    }
-
     private void openPicker(int request) {
         try {
             startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), request);
@@ -248,25 +247,6 @@ public class LauncherActivity extends Activity {
             return;
         }
 
-        if (requestCode == REQ_PICK_DOWNLOAD) {
-            File dest = picked.getName().equalsIgnoreCase("UT2004") ? picked : new File(picked, "UT2004");
-            long free = freeSpace(picked);
-            if (free >= 0 && free < GameDownloadService.REQUIRED_SPACE) {
-                pickError = getString(R.string.download_no_space, free >> 30,
-                        GameDownloadService.REQUIRED_SPACE >> 30);
-                refresh();
-                return;
-            }
-            pickError = null;
-            forcePick = false;
-            GameDownloadService.start(this, dest);
-            GameDownloadService.STATE.running = true;
-            GameDownloadService.STATE.message = getString(R.string.download_preparing);
-            GameDownloadService.STATE.percent = -1;
-            handler.post(watcher);
-            return;
-        }
-
         // Verification du dossier choisi.  Aucune copie : le jeu reste la ou
         // il est, l'application monte son dossier dans le runtime.
         try {
@@ -283,15 +263,6 @@ public class LauncherActivity extends Activity {
         launchGame(Swat4Installer.gameRoot(this));
     }
 
-    private static long freeSpace(File dir) {
-        try {
-            File existing = dir;
-            while (existing != null && !existing.exists()) existing = existing.getParentFile();
-            return existing == null ? -1 : new StatFs(existing.getPath()).getAvailableBytes();
-        } catch (IllegalArgumentException e) {
-            return -1;
-        }
-    }
 
     // ------------------------------------------------------------------
     // Reglages
