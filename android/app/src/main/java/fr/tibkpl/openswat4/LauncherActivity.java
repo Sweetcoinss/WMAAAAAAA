@@ -76,9 +76,6 @@ public class LauncherActivity extends Activity {
         pickButton = findViewById(R.id.pick);
         resolutionButton = findViewById(R.id.resolution);
         languageButton = findViewById(R.id.language);
-        TextView edition = findViewById(R.id.edition);
-        edition.setText(getString(R.string.edition_label, Edition.label()));
-        edition.setVisibility(Edition.isFree() ? View.VISIBLE : View.GONE);
         downloadButton.setOnClickListener(v -> confirmDownload());
         pickButton.setOnClickListener(v -> openPicker(REQ_PICK_GAME));
         resolutionButton.setOnClickListener(v -> openGraphicsSettings());

@@ -143,8 +143,7 @@ jobs:
           echo "OPENSWAT4_VERSION_NAME=$NAME" >> "$GITHUB_ENV"
           echo "OPENSWAT4_VERSION_CODE=$((1000 + GITHUB_RUN_NUMBER))" >> "$GITHUB_ENV"
           echo "RELEASE_TAG=v$NAME" >> "$GITHUB_ENV"
-          echo "APK_NAME=SWAT4-$NAME-full.apk" >> "$GITHUB_ENV"
-          echo "APK_FREE_NAME=SWAT4-$NAME-free.apk" >> "$GITHUB_ENV"
+          echo "APK_NAME=SWAT4-$NAME.apk" >> "$GITHUB_ENV"
 
       - name: Compilation
         env:
@@ -154,15 +153,19 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew assembleRelease --no-daemon
-          mv app/build/outputs/apk/release/app-full-release.apk "$APK_NAME"
-          mv app/build/outputs/apk/release/app-free-release.apk "$APK_FREE_NAME"
+          APK=$(find app/build/outputs/apk -name '*-release.apk' | head -n 1)
+          if [ -z "$APK" ]; then
+            echo "Aucun APK release produit" >&2
+            find app/build/outputs/apk -type f >&2 || true
+            exit 1
+          fi
+          mv "$APK" "$APK_NAME"
+          ls -la "$APK_NAME"
 
       - uses: actions/upload-artifact@v5
         with:
           name: apk
-          path: |
-            android/${{ env.APK_NAME }}
-            android/${{ env.APK_FREE_NAME }}
+          path: android/${{ env.APK_NAME }}
           retention-days: 7
 
       # Release uniquement depuis main (une autre branche lancee a la main ne publie rien)
@@ -175,6 +178,5 @@ jobs:
           target_commitish: ${{ github.sha }}
           files: |
             android/${{ env.APK_NAME }}
-            android/${{ env.APK_FREE_NAME }}
             android/runtime/out/packages.txt
           generate_release_notes: true

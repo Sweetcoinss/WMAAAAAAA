@@ -5,7 +5,6 @@
     <string name="status_installing">Installation du jeu dans le stockage de l\'application...</string>
     <!-- Runtime Linux (Box86 + Wine 32 bits + Mesa) : telecharge une fois, hors APK. -->
     <string name="runtime_url" translatable="false">https://github.com/Sweetcoinss/WMAAAAAAA/releases/download/runtime-v1/rootfs.tgz</string>
-    <string name="edition_label" translatable="false">Édition %1$s</string>
     <string name="shortcut_change_folder">Changer le dossier du jeu</string>
 
     <string name="btn_play">Jouer</string>

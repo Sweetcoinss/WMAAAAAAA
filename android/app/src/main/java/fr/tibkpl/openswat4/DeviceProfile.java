@@ -86,17 +86,7 @@ final class DeviceProfile {
         } else {
             p = new DeviceProfile(RENDERER_SOFTWARE, 540, 30, "logiciel (" + soc + ")");
         }
-        return p.cap(Edition.maxRenderHeight());
-    }
-
-    /**
-     * Plafonne la hauteur de rendu (edition gratuite : 720 pixels maximum).
-     * Le debit d'images cible est conserve : on prefere une image un peu moins
-     * grande mais toujours fluide.
-     */
-    private DeviceProfile cap(int maxHeight) {
-        if (renderHeight <= maxHeight) return this;
-        return new DeviceProfile(renderer, maxHeight, targetFps, gpuName);
+        return p;
     }
 
     /**

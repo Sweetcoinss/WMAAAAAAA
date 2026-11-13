@@ -86,13 +86,7 @@ final class GameRuntime {
         env.add("SWAT4_GAME_DIR=/game");
         env.add("SDL_JOYSTICK_HIDAPI=0");
 
-        // Edition gratuite : le jeu en reseau local est desactive (pas de
-        // preparation de l'interface reseau du runtime).
-        if (Edition.networkAllowed()) {
-            LanNetwork.prepare(context, config.rootfsDir);
-        } else {
-            Log.i("OpenSWAT4", "Edition gratuite : mode reseau desactive");
-        }
+        LanNetwork.prepare(context, config.rootfsDir);
         ProcessBuilder pb = proot(context, config.rootfsDir, binds, env, "/game",
                 "/opt/ut/run-swat4.sh");
         pb.redirectErrorStream(true);
