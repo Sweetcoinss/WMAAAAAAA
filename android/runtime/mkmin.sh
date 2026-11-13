@@ -77,6 +77,15 @@ copy /opt/ut
 [ -d /usr/lib/7zip ] && copy /usr/lib/7zip
 [ -d /opt/turnip ] && copy /opt/turnip/share
 
+# --- Box86 : binaire ARM 32 bits (armhf) dans un rootfs arm64 --------------
+# Le noyau execute les binaires AArch32 ; il faut donc le chargeur et la
+# libc armhf dans le rootfs.
+ARMHF=/usr/lib/arm-linux-gnueabihf
+copy /lib/ld-linux-armhf.so.3 \
+     $ARMHF/libc.so.6 $ARMHF/libm.so.6 $ARMHF/libdl.so.2 $ARMHF/libpthread.so.0 \
+     $ARMHF/librt.so.1 $ARMHF/libresolv.so.2 $ARMHF/libgcc_s.so.1
+[ -e /lib/ld-linux-armhf.so.3 ] || { echo "absent: /lib/ld-linux-armhf.so.3" >&2; exit 4; }
+
 # --- Box86 + Wine : le coeur du runtime -----------------------------------
 # Sans ces deux repertoires, le jeu ne peut pas demarrer : Box86 est
 # l'emulateur x86->ARM64 et Wine 32 bits fait tourner Swat4.exe.

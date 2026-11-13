@@ -28,6 +28,7 @@ apt-get install -y -q --no-install-recommends \
     libxss1 libxtst6 xvfb x11-xkb-utils xkb-data 7zip unshield mawk \
     libdrm2 libgbm1 \
     gcc g++ make binutils libc6-dev libx11-dev libxtst-dev libsdl3-dev pkg-config \
+    gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf \
     cmake git wget ca-certificates xz-utils python3 \
     libpng-dev libncurses-dev
 
@@ -55,18 +56,12 @@ cd /tmp/box86
 git clone --depth 1 --branch "$BOX86_VERSION" https://github.com/ptitSeb/box86.git src \
     || git clone --depth 1 https://github.com/ptitSeb/box86.git src
 cd src
-# Box86 v0.3.8 : les branches "aarch64" de son CMakeLists ajoutent des options
-# reservees a ARM 32 bits (-mfpu, -mfloat-abi, -marm) que le compilateur aarch64
-# refuse ("unrecognized command-line option"), et le bloc de detection cherche
-# un compilateur 32 bits.  On retire ces options ; la recompilation dynamique
-# (ARM_DYNAREC), qui assure la vitesse, reste activee.
-sed -i -e 's/ -mfpu=[a-zA-Z0-9.+-]*//g' \
-       -e 's/ -mfloat-abi=hard//g' \
-       -e 's/ -marm//g' \
-       -e 's/^[[:space:]]*add_definitions(-marm)[[:space:]]*$//' \
-       CMakeLists.txt
+# Box86 se compile en ARM 32 bits (armhf) : son recompilateur dynamique
+# (dynarec) produit du code ARM 32 bits, et son CMakeLists cherche donc le
+# compilateur croise arm-linux-gnueabihf-gcc quand on cible ARM64.  Le
+# binaire obtenu tourne en mode AArch32 sur un telephone arm64.
 mkdir -p build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DARM64=ON -DARM_DYNAREC=ON -DLD80BITS=0 .. >/dev/null
+cmake -DCMAKE_BUILD_TYPE=Release -DARM64=ON -DLD80BITS=0 .. >/dev/null
 make -j"$(nproc)" >/dev/null
 install -m 755 box86 /opt/box86/box86
 # La version standard de Box86 est un executable autonome (la variante BOX86LIB
@@ -75,23 +70,28 @@ if [ ! -x /opt/box86/box86 ]; then
     echo "ECHEC binaire Box86 absent" >&2
     exit 3
 fi
-# Verification de l'architecture : on ne veut surtout pas un binaire i386
-# (le compilateur 32 bits est cherche par le CMakeLists de Box86).
-if ! readelf -h /opt/box86/box86 2>/dev/null | grep -q 'AArch64'; then
-    echo "ECHEC Box86 n'est pas un binaire AArch64" >&2
+# Verification : Box86 doit etre un binaire ARM 32 bits (ELF32) avec le
+# chargeur armhf.  Un binaire AArch64 ne serait pas valide ici.
+if ! readelf -h /opt/box86/box86 2>/dev/null | grep -q 'Class:.*ELF32'; then
+    echo "ECHEC Box86 n'est pas un binaire ELF32 (armhf)" >&2
     readelf -h /opt/box86/box86 >&2 || true
     exit 3
 fi
+readelf -l /opt/box86/box86 2>/dev/null | grep -A1 'INTERP' | head -n 3
 echo "Box86 : $(du -h /opt/box86/box86 | cut -f1)"
 cd /tmp && rm -rf /tmp/box86
 
 # ---------------------------------------------------------------------------
-# 5. Bibliotheques C i386 : NON NECESSAIRE
-#    Box86 emule lui-meme libc.so.6 / libdl.so.2 / libpthread.so.0 / libm.so.6
-#    (voir essential_libs dans les sources de Box86) : une glibc i386 reelle
-#    dans le chemin serait ignoree, voireiverse, et coute 50 Mo.  On ne met
-#    donc que l'arborescence Box86.
+# 5. Bibliotheques C armhf : Box86 est compile en ARM 32 bits (son dynarec
+#    produit du code ARM 32 bits).  Le rootfs, lui, est arm64 : il lui faut
+#    donc la libc armhf et son chargeur, que le noyau executera en mode
+#    AArch32.  Box86 emule ensuite le programme invite i386.
 # ---------------------------------------------------------------------------
+echo "=== libc armhf ==="
+dpkg --add-architecture armhf
+apt-get update -q
+apt-get install -y -q --no-install-recommends libc6:armhf libgcc-s1:armhf
+ls -l /lib/ld-linux-armhf.so.3 /usr/lib/arm-linux-gnueabihf/libc.so.6
 
 # ---------------------------------------------------------------------------
 # 6. Wine 32 bits (x86 pur) : le jeu est un binaire i386
