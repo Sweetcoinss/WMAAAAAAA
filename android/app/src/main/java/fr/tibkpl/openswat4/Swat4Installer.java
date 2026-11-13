@@ -186,8 +186,8 @@ final class Swat4Installer {
     static File verifyGame(File source) throws IOException {
         File content = new File(source, "Content").isDirectory() ? new File(source, "Content") : source;
         if (!new File(content, "System/Swat4.exe").isFile()) {
-            throw new IOException("Swat4.exe introuvable dans " + source.getAbsolutePath()
-                    + " (dossier attendu : Content/System/Swat4.exe)");
+            throw new IOException(source.getAbsolutePath()
+                    + " : Swat4.exe introuvable (dossier attendu : Content/System/Swat4.exe)");
         }
         return content.getParentFile();   // la racine du jeu (contient Content/)
     }

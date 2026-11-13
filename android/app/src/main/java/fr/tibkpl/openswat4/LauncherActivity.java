@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.util.Log;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -14,20 +13,32 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.StatFs;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.io.File;
 
 /**
- * Ecran de demarrage : lance le jeu s'il est installe au chemin memorise ; sinon propose de le
- * telecharger (dossier de destination au choix) ou d'indiquer ou il se trouve.
+ * Ecran de demarrage simplifie.
+ *
+ * <p>Un seul geste compte : <b>choisir le dossier de la jeu</b>.  Tout le reste
+ * devient automatique :
+ * <ol>
+ *   <li>verification du dossier choisi ;</li>
+ *   <li>telechargement du runtime Linux (une seule fois, ~190 Mo) ;</li>
+ *   <li>preparation du prefixe Wine ;</li>
+ *   <li>lancement du jeu.</li>
+ * </ol>
+ *
+ * <p>Aucun reglage n'est obligatoire : les reglages de graphismes, de langue du
+ * jeu et de manette sont dans la roue dentee, en bas de l'ecran.
  */
 public class LauncherActivity extends Activity {
     private static final String TAG = "OpenSWAT4";
@@ -55,11 +66,16 @@ public class LauncherActivity extends Activity {
     private boolean forcePick;
     private String pickError;
 
-    private final Runnable downloadWatcher = new Runnable() {
+    /** Preparation automatique en cours (runtime / prefixe Wine). */
+    private boolean preparing;
+    private final Runnable watcher = new Runnable() {
         @Override
         public void run() {
+            if (preparing) {
+                handler.postDelayed(this, 400);
+                return;
+            }
             refresh();
-            if (GameDownloadService.STATE.running) handler.postDelayed(this, 500);
         }
     };
 
@@ -71,18 +87,24 @@ public class LauncherActivity extends Activity {
         progress = findViewById(R.id.progress);
         playButton = findViewById(R.id.play);
         restartButton = findViewById(R.id.restart);
-        restartButton.setOnClickListener(v -> { setResult(Activity.RESULT_FIRST_USER); finish(); });
         downloadButton = findViewById(R.id.download);
         pickButton = findViewById(R.id.pick);
         resolutionButton = findViewById(R.id.resolution);
         languageButton = findViewById(R.id.language);
+
+        restartButton.setOnClickListener(v -> { setResult(Activity.RESULT_FIRST_USER); finish(); });
         downloadButton.setOnClickListener(v -> confirmDownload());
-        pickButton.setOnClickListener(v -> openPicker(REQ_PICK_GAME));
+        pickButton.setOnClickListener(v -> {
+            if (!hasStorageAccess()) requestStorageAccess();
+            else openPicker(REQ_PICK_GAME);
+        });
         resolutionButton.setOnClickListener(v -> openGraphicsSettings());
         findViewById(R.id.controller).setOnClickListener(v -> ControllerSettings.show(this));
         updateResolutionButton();
+
         forcePick = ACTION_CHANGE_FOLDER.equals(getIntent().getAction())
                 || ACTION_SETTINGS.equals(getIntent().getAction());
+
         if (Build.VERSION.SDK_INT >= 33
                 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQ_PERMISSION);
@@ -93,98 +115,111 @@ public class LauncherActivity extends Activity {
     protected void onResume() {
         super.onResume();
         refresh();
-        if (GameDownloadService.STATE.running) handler.post(downloadWatcher);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        handler.removeCallbacks(downloadWatcher);
+        handler.removeCallbacks(watcher);
     }
+
+    // ------------------------------------------------------------------
+    // Affichage
+    // ------------------------------------------------------------------
 
     private void refresh() {
-        GameDownloadService.State dl = GameDownloadService.STATE;
-        boolean storage = hasStorageAccess();
+        if (preparing) return;
 
-        if (dl.running) {
-            status.setText(dl.message);
-            progress.setVisibility(View.VISIBLE);
-            progress.setIndeterminate(dl.percent < 0);
-            if (dl.percent >= 0) progress.setProgress(dl.percent);
-            setButtons(false, false, false);
-            return;
-        }
-        progress.setVisibility(View.GONE);
-
-        if (!storage) {
-            status.setText(R.string.status_need_permission);
-            playButton.setVisibility(View.GONE);
-            downloadButton.setVisibility(View.GONE);
-            pickButton.setVisibility(View.VISIBLE);
-            pickButton.setEnabled(true);
-            pickButton.setText(R.string.btn_grant);
-            pickButton.setOnClickListener(v -> requestStorageAccess());
-            return;
-        }
-        pickButton.setText(R.string.btn_pick);
-        pickButton.setOnClickListener(v -> openPicker(REQ_PICK_GAME));
-
-        // SWAT 4 : le jeu n'est ni redistribue ni copie.  L'utilisateur
-        // designe son installation (carte SD le plus souvent), l'application
-        // la monte dans le runtime a l'emplacement ou elle se trouve.
         File gameDir = Swat4Installer.gameRoot(this);
-        boolean justInstalled = dl.finished && dl.error == null && dl.gameDir != null;
+        boolean returnToGame = getIntent().getBooleanExtra(EXTRA_RETURN_TO_GAME, false);
 
-        // Jeu present : lancement direct (y compris juste apres le telechargement)
-        if (gameDir != null && !forcePick && pickError == null
-                && !getIntent().getBooleanExtra(EXTRA_RETURN_TO_GAME, false)) {
-            dl.finished = false;
-            launchGame(gameDir);
+        progress.setVisibility(View.GONE);
+        playButton.setVisibility(View.GONE);
+        restartButton.setVisibility(View.GONE);
+        downloadButton.setVisibility(View.VISIBLE);
+        pickButton.setVisibility(View.VISIBLE);
+        pickButton.setEnabled(true);
+        pickButton.setText(R.string.btn_pick);
+
+        if (pickError != null) {
+            status.setText(pickError);
             return;
         }
 
-        if (dl.finished && dl.error != null) {
-            status.setText(getString(R.string.download_failed, dl.error));
-        } else if (justInstalled) {
-            status.setText(getString(R.string.status_installed, dl.gameDir.getAbsolutePath()));
-        } else if (pickError != null) {
-            status.setText(pickError);
-        } else if (gameDir != null) {
-            status.setText(getString(R.string.status_found, gameDir.getAbsolutePath()));
-        } else if (Swat4Installer.chosenGameDir(this) != null) {
-            status.setText(getString(R.string.status_saved_missing, Swat4Installer.chosenGameDir(this).getAbsolutePath()));
-        } else {
-            status.setText(R.string.status_no_game);
+        if (gameDir == null) {
+            // Pas encore de jeu : une seule action a faire.
+            status.setText(hasStorageAccess()
+                    ? R.string.status_choose_folder
+                    : R.string.status_need_permission);
+            return;
         }
-        setButtons(gameDir != null, true, true);
+
+        // Le jeu est la : on propose de jouer directement.
+        status.setText(getString(R.string.status_found, gameDir.getAbsolutePath()));
+        playButton.setVisibility(View.VISIBLE);
+        playButton.setText(returnToGame ? R.string.btn_return_game : R.string.btn_play);
+        playButton.setOnClickListener(v -> {
+            if (returnToGame) finish();
+            else launchGame(gameDir);
+        });
+        if (returnToGame) {
+            restartButton.setVisibility(View.VISIBLE);
+        }
         updateLanguageButton(gameDir);
-        if (gameDir != null) {
-            boolean returnToGame = getIntent().getBooleanExtra(EXTRA_RETURN_TO_GAME, false);
-            playButton.setText(returnToGame ? R.string.btn_return_game : R.string.btn_play);
-            playButton.setOnClickListener(v -> { if (returnToGame) finish(); else launchGame(gameDir); });
-            playButton.requestFocus();
-        } else {
-            downloadButton.requestFocus();
-        }
     }
 
-    private void setButtons(boolean play, boolean download, boolean pick) {
-        playButton.setVisibility(play ? View.VISIBLE : View.GONE);
-        restartButton.setVisibility(play && getIntent().getBooleanExtra(EXTRA_RETURN_TO_GAME, false) ? View.VISIBLE : View.GONE);
-        downloadButton.setVisibility(download ? View.VISIBLE : View.GONE);
-        downloadButton.setEnabled(download);
-        pickButton.setVisibility(View.VISIBLE);
-        pickButton.setEnabled(pick);
-    }
+    // ------------------------------------------------------------------
+    // Parcours automatique
+    // ------------------------------------------------------------------
 
+    /**
+     * Lance la partie : le runtime est telecharge s'il manque, le prefixe Wine
+     * est prepare, puis le jeu demarre.  Tout se fait ici, sans action de
+     * l'utilisateur.
+     */
     private void launchGame(File gameDir) {
-        Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra(GameActivity.EXTRA_GAME_DIR, gameDir.getAbsolutePath());
-        startActivity(intent);
-        finish();
+        if (gameDir == null) return;
+        status.setText(R.string.status_preparing);
+        progress.setVisibility(View.VISIBLE);
+        progress.setIndeterminate(true);
+        preparing = true;
+        handler.removeCallbacks(watcher);
+        handler.postDelayed(watcher, 400);
+
+        new Thread(() -> {
+            String error = null;
+            try {
+                Swat4Installer.ensureRuntime(this, (step) -> runOnUiThread(() -> {
+                    status.setText(step);
+                    progress.setIndeterminate(true);
+                }));
+            } catch (Exception e) {
+                error = e.getMessage();
+                Log.w(TAG, "runtime indisponible", e);
+            }
+            final String failure = error;
+            runOnUiThread(() -> {
+                preparing = false;
+                handler.removeCallbacks(watcher);
+                if (failure != null) {
+                    progress.setVisibility(View.GONE);
+                    status.setText(getString(R.string.status_runtime_failed, failure));
+                    return;
+                }
+                progress.setVisibility(View.GONE);
+                Intent intent = new Intent(this, GameActivity.class);
+                intent.putExtra(GameActivity.EXTRA_GAME_DIR, gameDir.getAbsolutePath());
+                startActivity(intent);
+                finish();
+            });
+        }).start();
     }
 
-    /** Explique la provenance et la taille du telechargement avant de choisir la destination. */
+    // ------------------------------------------------------------------
+    // Choix du dossier
+    // ------------------------------------------------------------------
+
+    /** Option secondaire : telecharger la jeu pour ceux qui ne l'ont pas. */
     private void confirmDownload() {
         new AlertDialog.Builder(this)
                 .setTitle(R.string.download_confirm_title)
@@ -195,7 +230,11 @@ public class LauncherActivity extends Activity {
     }
 
     private void openPicker(int request) {
-        startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), request);
+        try {
+            startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), request);
+        } catch (Exception e) {
+            pickError = getString(R.string.status_pick_unsupported);
+        }
     }
 
     @Override
@@ -205,6 +244,7 @@ public class LauncherActivity extends Activity {
         File picked = GameData.treeUriToFile(data.getData());
         if (picked == null) {
             pickError = getString(R.string.status_pick_unsupported);
+            refresh();
             return;
         }
 
@@ -214,33 +254,33 @@ public class LauncherActivity extends Activity {
             if (free >= 0 && free < GameDownloadService.REQUIRED_SPACE) {
                 pickError = getString(R.string.download_no_space, free >> 30,
                         GameDownloadService.REQUIRED_SPACE >> 30);
+                refresh();
                 return;
             }
             pickError = null;
             forcePick = false;
             GameDownloadService.start(this, dest);
-            GameDownloadService.STATE.running = true; // affichage immediat de la progression
+            GameDownloadService.STATE.running = true;
             GameDownloadService.STATE.message = getString(R.string.download_preparing);
             GameDownloadService.STATE.percent = -1;
-            handler.post(downloadWatcher);
+            handler.post(watcher);
             return;
         }
 
-        // SWAT 4 : verification du dossier choisi.  Aucune copie : le jeu reste
-        // la ou il est, l'application monte son dossier dans le runtime.
-        File source = picked;
+        // Verification du dossier choisi.  Aucune copie : le jeu reste la ou
+        // il est, l'application monte son dossier dans le runtime.
         try {
-            File root = Swat4Installer.verifyGame(source);
+            File root = Swat4Installer.verifyGame(picked);
             Swat4Installer.rememberGameDir(this, root);
+            pickError = null;
+            forcePick = false;
         } catch (Exception e) {
             pickError = e.getMessage();
+            refresh();
             return;
         }
-        pickError = null;
-        forcePick = false;
-        status.setText(R.string.status_installing);
+        // Le jeu est choisi : on demarre tout de suite, automatiquement.
         launchGame(Swat4Installer.gameRoot(this));
-        return;
     }
 
     private static long freeSpace(File dir) {
@@ -253,7 +293,11 @@ public class LauncherActivity extends Activity {
         }
     }
 
-    /** Langues detectees dans les fichiers du jeu (et du patch) ; bouton masque sans jeu. */
+    // ------------------------------------------------------------------
+    // Reglages
+    // ------------------------------------------------------------------
+
+    /** Langues detectees dans les fichiers du jeu ; bouton masque sans jeu. */
     private void updateLanguageButton(File gameDir) {
         if (gameDir == null) {
             languageButton.setVisibility(View.GONE);

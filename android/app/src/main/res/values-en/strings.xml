@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_subtitle">Unofficial launcher — 32-bit Wine + Box86 on ARM64</string>
+    <string name="shortcut_change_folder">Change the game folder</string>
+
+    <string name="btn_play">Play</string>
+    <string name="btn_pick">Choose the game folder</string>
+    <string name="btn_grant">Allow file access</string>
+    <string name="btn_language">Game language: %1$s</string>
+    <string name="btn_download_game">Download the game (≈ 3 GB)</string>
+    <string name="btn_return_game">Back to the game</string>
+    <string name="btn_restart_game">Restart the game</string>
+    <string name="btn_controller">Controller settings</string>
+    <string name="settings">Settings</string>
+
+    <string name="status_choose_folder">Choose the game folder in the phone storage or on the SD card.\n\nOnce the folder is picked, everything happens automatically: runtime download, Wine setup, then the game starts.</string>
+    <string name="status_need_permission">The app needs access to your files to read the game folder.\n\nTap «Choose the game folder» and the system will ask for permission.</string>
+    <string name="status_preparing">Preparing…</string>
+    <string name="status_runtime_failed">Could not prepare the runtime: %1$s</string>
+    <string name="status_found">Game found:\n%1$s</string>
+    <string name="status_installed">Install finished:\n%1$s</string>
+    <string name="status_saved_missing">The game is no longer in:\n%1$s\n\nPick its folder again.</string>
+    <string name="status_pick_invalid">This folder does not contain SWAT 4:\n%1$s\n\nMissing items: %2$s</string>
+    <string name="status_pick_unsupported">This folder cannot be accessed directly. Pick a folder in the internal storage or on the SD card.</string>
+    <string name="status_installing">Preparing the game files…</string>
+
+    <string name="download_confirm_title">Download SWAT 4</string>
+    <string name="download_confirm_text">This option is for people who do not own the game. It downloads the DVD image from the OldUnreal servers and installs it on the device.\n\n• Download: about 3 GB (Wi-Fi advised)\n• Space needed: 9 GB during the install\n\nYou will then choose the installation folder.</string>
+    <string name="download_confirm_ok">Choose the folder</string>
+    <string name="download_no_space">Not enough free space: %1$d GB available, %2$d GB needed.</string>
+    <string name="download_channel">Game download</string>
+    <string name="download_title">SWAT 4</string>
+    <string name="download_preparing">Preparing…</string>
+    <string name="download_iso">Downloading the disc image… %1$d %%</string>
+    <string name="download_iso_progress">Downloading the disc image: %1$d / %2$d MB</string>
+    <string name="download_verify">Verifying the download…</string>
+    <string name="download_install">Installing: %1$s</string>
+    <string name="download_done">SWAT 4 is installed.</string>
+    <string name="download_failed">The install failed: %1$s</string>
+
+    <string name="install_runtime">Downloading the Linux runtime… %1$d %%\n(first time only)</string>
+    <string name="install_patch">Downloading the engine… %1$d %%\n(first time only)</string>
+    <string name="install_patch_extract">Preparing the engine…</string>
+    <string name="game_preparing">Preparing the game files…</string>
+    <string name="game_starting">Starting the game…</string>
+    <string name="game_error">Error while preparing: %1$s</string>
+    <string name="game_exited">The game stopped (code %1$d).\n\n%2$s</string>
+
+    <string name="input_text_title">Type in the selected field of the game</string>
+    <string name="input_text_send">Send</string>
+
+    <string name="graphics_title">Graphics</string>
+    <string name="graphics_driver">Graphics driver</string>
+    <string name="graphics_resolution">Render resolution</string>
+    <string name="graphics_frame_generation">Frame generation (interpolation)</string>
+    <string name="graphics_fps">Show the engine frame rate</string>
+    <string name="graphics_apply">Apply</string>
+    <string name="graphics_summary">Graphics: %1$dp · %2$s</string>
+    <string name="graphics_help">The Vulkan driver is picked automatically: Turnip for Qualcomm Adreno GPUs, malisx2 for Arm Mali GPUs. If the screen is black or the game crashes at start-up, switch back to «Software» (slower). For a steady frame rate use 540p on entry-level phones. Frame generation interpolates between the two latest frames, making the display smoother at 60 Hz without asking anything more from the game.</string>
+    <string-array name="graphics_drivers">
+        <item>Automatic</item>
+        <item>Vulkan · Turnip (Adreno)</item>
+        <item>Vulkan · malisx2 (Mali)</item>
+        <item>Software · troubleshooting</item>
+    </string-array>
+    <string-array name="graphics_resolutions">
+        <item>540p · performance</item>
+        <item>720p · balanced</item>
+        <item>1080p · sharpness</item>
+    </string-array>
+</resources>
